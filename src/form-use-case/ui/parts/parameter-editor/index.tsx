@@ -48,6 +48,12 @@ export const ParameterEditor: React.FC<ParameterEditorProps> = ({
                                 onChange={(e) => updateParam(index, { key: e.target.value })}
                                 className={styles.keyInput}
                             />
+                            <Input
+                                placeholder="Флаг (например: id)"
+                                value={param.flagName || ''}
+                                onChange={(e) => updateParam(index, { flagName: e.target.value || undefined })}
+                                className={styles.flagInput}
+                            />
                             {showHideKey && (
                                 <label className={styles.hideKeyLabel}>
                                     <input

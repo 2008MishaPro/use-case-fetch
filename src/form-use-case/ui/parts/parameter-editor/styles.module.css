@@ -1,5 +1,6 @@
 .container {
   width: 100%;
+  min-width: 40vw;
 }
 
 .paramCard {
@@ -15,7 +16,11 @@
 }
 
 .keyInput {
-  width: 120px;
+    width: 200px;
+}
+
+.flagInput {
+    width: 200px;
 }
 
 .hideKeyLabel {
@@ -37,7 +42,7 @@
 }
 
 .indexInput {
-  width: 120px;
+  width: 200px;
 }
 
 .searchKeyInput {
@@ -49,7 +54,7 @@
 }
 
 .defaultValueInput {
-  width: 100px;
+  width: 200px;
 }
 
 .addButton {

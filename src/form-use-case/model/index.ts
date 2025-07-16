@@ -1,5 +1,5 @@
 import { atom, action } from '@reatom/framework'
-
+const { api } = await import('../../shared/api')
 type RequestsType = 'get' | 'post' | 'put' | 'delete' | 'patch'
 
 // Тип для извлечения данных из предыдущих ответов
@@ -16,6 +16,7 @@ interface RequestParams {
     value?: any; // статическое значение
     extractor?: DataExtractor; // извлечение из предыдущего ответа
     hideKey?: boolean; // скрыть ключ в URL (для создания /users/2 вместо /users?id=2)
+    flagName?: string; // имя флага для вставки в URL (например: "id" для замены !id! в /api/users/!id!/posts)
 }
 
 interface RequestItem {
@@ -132,14 +133,11 @@ function findValueByKey(data: any, searchKey: string, specificValue?: any, defau
     }
 }
 
-// Функция для построения URL с параметрами (только для hideKey=true)
+// Функция для построения URL с параметрами
 function buildUrlWithParams(baseUrl: string, urlParams: RequestParams[], results: RequestResult[]): string {
     let url = baseUrl
     
-    // Обрабатываем только параметры с hideKey=true
     urlParams.forEach(param => {
-        if (!param.hideKey) return // Пропускаем параметры без hideKey
-        
         let value: any
         
         if (param.value !== undefined) {
@@ -159,8 +157,15 @@ function buildUrlWithParams(baseUrl: string, urlParams: RequestParams[], results
         }
         
         if (value !== undefined && value !== null) {
-            // Добавляем значение прямо к URL без ключа
-            url = url.endsWith('/') ? url + value : url + '/' + value
+            // Если есть flagName, заменяем флаг в URL
+            if (param.flagName) {
+                const flagPattern = `!${param.flagName}!`
+                url = url.replace(flagPattern, value)
+            }
+            // Иначе, если hideKey=true, добавляем значение в конец URL
+            else if (param.hideKey) {
+                url = url.endsWith('/') ? url + value : url + '/' + value
+            }
         }
     })
     
@@ -240,10 +245,10 @@ export const executeUseCaseAction = action(async (ctx) => {
                 queryParams = buildRequestParams(request.queryParams, results)
             }
             
-            // Добавляем URL параметры с hideKey=false как query параметры
+            // Добавляем URL параметры с hideKey=false и без flagName как query параметры
             if (request.urlParams && request.urlParams.length > 0) {
                 const urlQueryParams = buildRequestParams(
-                    request.urlParams.filter(param => !param.hideKey), 
+                    request.urlParams.filter(param => !param.hideKey && !param.flagName), 
                     results
                 )
                 queryParams = { ...queryParams, ...urlQueryParams }
@@ -253,9 +258,7 @@ export const executeUseCaseAction = action(async (ctx) => {
                 const queryString = new URLSearchParams(queryParams).toString()
                 url += (url.includes('?') ? '&' : '?') + queryString
             }
-            
-            // Выполняем запрос
-            const { api } = await import('../../shared/api')
+
             let response: any
             
             switch (request.method!.toUpperCase()) {
