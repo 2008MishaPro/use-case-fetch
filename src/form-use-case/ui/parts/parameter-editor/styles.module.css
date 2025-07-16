@@ -1,0 +1,58 @@
+.container {
+  width: 100%;
+}
+
+.paramCard {
+  margin-top: 8px;
+}
+
+.paramSpace {
+  width: 100%;
+}
+
+.paramRow {
+  width: 100%;
+}
+
+.keyInput {
+  width: 120px;
+}
+
+.hideKeyLabel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.typeSelect {
+  width: 100px;
+}
+
+.extractorSpace {
+  width: 100%;
+}
+
+.extractorRow {
+  width: 100%;
+}
+
+.indexInput {
+  width: 120px;
+}
+
+.searchKeyInput {
+  flex: 1;
+}
+
+.specificValueInput {
+  flex: 1;
+}
+
+.defaultValueInput {
+  width: 100px;
+}
+
+.addButton {
+  width: 100%;
+  margin-top: 8px;
+}

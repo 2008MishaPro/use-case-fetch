@@ -102,6 +102,13 @@ app.get('/api/categories/:id/posts', (c) => {
   return c.json({ posts: categoryPosts, total: categoryPosts.length })
 })
 
+app.get('/api/users/:id/posts', (c) => {
+  const userId = parseInt(c.req.param('id'))
+  const userPosts = posts.filter(post => post.userId === userId)
+  
+  return c.json({ posts: userPosts, total: userPosts.length })
+})
+
 app.get('/api/stats', (c) => {
   const stats = {
     totalUsers: users.length,

@@ -1,0 +1,17 @@
+.resultsCard {
+  margin-top: 16px;
+}
+
+.resultSpace {
+  width: 100%;
+}
+
+.responseData {
+  background: #f5f5f5;
+  padding: 8px;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow: auto;
+  white-space: pre-wrap;
+  font-family: 'Courier New', monospace;
+}

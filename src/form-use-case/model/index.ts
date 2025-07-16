@@ -11,7 +11,7 @@ interface DataExtractor {
 }
 
 // Конфигурация параметра запроса
-interface RequestParam {
+interface RequestParams {
     key: string; // ключ параметра
     value?: any; // статическое значение
     extractor?: DataExtractor; // извлечение из предыдущего ответа
@@ -22,9 +22,9 @@ interface RequestItem {
     id: string;
     method: RequestsType | null;
     url: string | null;
-    urlParams?: RequestParam[]; // для динамических частей URL (например /users/{id})
-    bodyParams?: RequestParam[]; // параметры для тела запроса
-    queryParams?: RequestParam[]; // параметры для query string
+    urlParams?: RequestParams[]; // для динамических частей URL (например /users/{id})
+    bodyParams?: RequestParams[]; // параметры для тела запроса
+    queryParams?: RequestParams[]; // параметры для query string
     description?: string; // описание запроса
     body?: string; // JSON тело запроса
 }
@@ -133,7 +133,7 @@ function findValueByKey(data: any, searchKey: string, specificValue?: any, defau
 }
 
 // Функция для построения URL с параметрами (только для hideKey=true)
-function buildUrlWithParams(baseUrl: string, urlParams: RequestParam[], results: RequestResult[]): string {
+function buildUrlWithParams(baseUrl: string, urlParams: RequestParams[], results: RequestResult[]): string {
     let url = baseUrl
     
     // Обрабатываем только параметры с hideKey=true
@@ -167,7 +167,7 @@ function buildUrlWithParams(baseUrl: string, urlParams: RequestParam[], results:
     return url
 }
 
-function buildRequestParams(params: RequestParam[], results: RequestResult[]): Record<string, any> {
+function buildRequestParams(params: RequestParams[], results: RequestResult[]): Record<string, any> {
     const result: Record<string, any> = {}
     
     params.forEach(param => {
@@ -349,4 +349,4 @@ export const resetUseCaseAction = action((ctx) => {
 }, 'resetUseCaseAction')
 
 // Экспорт типов для использования в UI
-export type { RequestItem, RequestParam, DataExtractor, RequestResult, UseCaseExecution }
+export type { RequestItem, RequestParams, DataExtractor, RequestResult, UseCaseExecution }

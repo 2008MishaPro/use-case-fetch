@@ -1,0 +1,23 @@
+.requestCard {
+  margin-bottom: 16px;
+}
+
+.requestSpace {
+  width: 100%;
+}
+
+.methodUrlRow {
+  width: 100%;
+}
+
+.methodSelect {
+  width: 100px;
+}
+
+.urlInput {
+  flex: 1;
+}
+
+.bodyTextArea {
+  width: 100%;
+}
