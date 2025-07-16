@@ -91,6 +91,9 @@ export const ParameterEditor: React.FC<ParameterEditorProps> = ({
                             />
                         ) : (
                             <Space direction="vertical" className={styles.extractorSpace}>
+                                <Space>
+                                    <Text>Извлечение параметров из ответа запроса № {param.extractor.fromResponse}</Text>
+                                </Space>
                                 <Space className={styles.extractorRow}>
                                     <InputNumber
                                         placeholder="Индекс запроса"
