@@ -1,12 +1,10 @@
 import React from 'react';
-import { Input, Space, Button, Card, Typography, Select, InputNumber, AutoComplete } from 'antd';
+import { Input, Button, InputNumber, AutoComplete } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { reatomComponent } from '@reatom/npm-react';
 import type {RequestParams} from '../../../model';
 import { availablePathsAtom } from '../../../model';
 import styles from './styles.module.css';
-
-const { Text } = Typography;
 
 interface ParameterEditorProps {
     params: RequestParams[];
@@ -25,6 +23,8 @@ export const ParameterEditor = reatomComponent<ParameterEditorProps>(({
     showHideKey = false
 }) => {
     const availablePaths = ctx.spy(availablePathsAtom);
+
+    console.log('availablePaths', availablePaths)
     const addParam = () => {
         onChange([...params, { key: '', value: '' }]);
     };
@@ -70,27 +70,27 @@ export const ParameterEditor = reatomComponent<ParameterEditorProps>(({
                                     className={styles.flagInput}
                                 />
                             )}
-                            <Select
-                                value={param.extractor ? 'dynamic' : 'static'}
-                                onChange={(value) => {
-                                    if (value === 'static') {
-                                        updateParam(index, { extractor: undefined, value: '' })
-                                    } else {
-                                        updateParam(index, { 
-                                            extractor: { fromResponse: 0, searchKey: '' },
-                                            value: undefined 
-                                        })
-                                    }
-                                }}
-                                className={styles.typeSelect}
-                            >
-                                <Select.Option value="static">Статическое значение</Select.Option>
-                                <Select.Option value="dynamic">Извлечение из ответа</Select.Option>
-                            </Select>
-                            <Button 
-                                type="text" 
-                                danger 
-                                icon={<DeleteOutlined />} 
+                            <label className={styles.extractorLabel}>
+                                <input
+                                    type="checkbox"
+                                    checked={!!param.extractor}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            updateParam(index, {
+                                                extractor: { fromResponse: 0, searchKey: '' },
+                                                value: undefined
+                                            })
+                                        } else {
+                                            updateParam(index, { extractor: undefined, value: '' })
+                                        }
+                                    }}
+                                />
+                                Использовать данные из предыдущего запроса
+                            </label>
+                            <Button
+                                type="text"
+                                danger
+                                icon={<DeleteOutlined />}
                                 onClick={() => removeParam(index)}
                                 className={styles.deleteButton}
                             />
@@ -135,9 +135,9 @@ export const ParameterEditor = reatomComponent<ParameterEditorProps>(({
                         )}
                     </div>
                 ))}
-                <Button 
-                    type="dashed" 
-                    onClick={addParam} 
+                <Button
+                    type="dashed"
+                    onClick={addParam}
                     className={styles.addButton}
                 >
                     Добавить параметр
