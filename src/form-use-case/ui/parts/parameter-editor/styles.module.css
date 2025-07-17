@@ -1,10 +1,14 @@
 .container {
   width: 100%;
+  max-width: 100%;
   background: #fafafa;
   border: 1px solid #f0f0f0;
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
+  box-sizing: border-box;
+  overflow: hidden;
+  word-wrap: break-word;
 }
 
 .title {
@@ -42,19 +46,28 @@
   gap: 12px;
   align-items: center;
   width: 100%;
+  max-width: 100%;
   flex-wrap: wrap;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .keyInput {
-  min-width: 150px;
   flex: 1;
+  min-width: 0;
   max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
 }
 
 .flagInput {
-  min-width: 150px;
   flex: 1;
+  min-width: 0;
   max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
 }
 
 .hideKeyLabel {
@@ -67,17 +80,22 @@
 }
 
 .typeSelect {
-  min-width: 120px;
+  min-width: 0;
+  width: 120px;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .extractorSpace {
   width: 100%;
+  max-width: 100%;
   background: #f9f9f9;
   border: 1px solid #e8e8e8;
   border-radius: 6px;
   padding: 12px;
   margin-top: 8px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .extractorRow {
@@ -85,8 +103,11 @@
   gap: 12px;
   align-items: center;
   width: 100%;
+  max-width: 100%;
   flex-wrap: wrap;
   margin-bottom: 8px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .extractorRow:last-child {
@@ -101,13 +122,18 @@
 }
 
 .indexInput {
-  min-width: 100px;
+  min-width: 0;
+  width: 100px;
   max-width: 150px;
+  box-sizing: border-box;
 }
 
 .searchKeyInput {
   flex: 1;
-  min-width: 200px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
 }
 
 

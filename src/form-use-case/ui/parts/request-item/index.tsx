@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Input, Select, Button, Space, message, Modal, Popconfirm } from 'antd';
+import { Input, Select, Button, message, Modal, Popconfirm, Collapse } from 'antd';
 import { DeleteOutlined, SendOutlined } from '@ant-design/icons';
 import { reatomComponent } from '@reatom/npm-react';
 import type { RequestItem } from '../../../model';
@@ -87,20 +87,23 @@ export const RequestItemComponent = reatomComponent<RequestItemProps>(({ ctx, it
             </Modal>
         );
     };
-    const cardClassName = `${styles.requestCard} ${currentResult ? (currentResult.success ? styles.success : styles.error) : ''}`;
+    const getRequestStatus = () => {
+        if (!currentResult) return '';
+        return currentResult.success ? ' ✅' : ' ❌';
+    };
+
+    const getHeaderTitle = () => {
+        const baseTitle = `Запрос ${index + 1}`;
+        const status = getRequestStatus();
+        const methodUrl = item.method && item.url ? ` (${item.method} ${item.url})` : '';
+        return baseTitle + status + methodUrl;
+    };
 
     return (
         <div className={styles.requestContainer}>
-            <Card className={cardClassName}>
-                <div className={styles.requestSpace}>
-                    {/* Описание запроса */}
-                    <Input
-                        placeholder="Описание запроса"
-                        value={item.description}
-                        onChange={(e) => onUpdate({ description: e.target.value })}
-                        className={styles.descriptionInput}
-                        size="large"
-                    />
+            <Collapse defaultActiveKey={[]} className={styles.requestCollapse}>
+                <Collapse.Panel key="1" header={getHeaderTitle()}>
+                    <div className={styles.requestSpace}>
 
                     {/* Метод и URL */}
                     <div className={styles.methodUrlRow}>
@@ -212,8 +215,9 @@ export const RequestItemComponent = reatomComponent<RequestItemProps>(({ ctx, it
                             </div>
                         </div>
                     )}
-                </div>
-            </Card>
+                    </div>
+                </Collapse.Panel>
+            </Collapse>
             {renderResultModal()}
         </div>
     );
