@@ -2,49 +2,45 @@ import { atom, action } from '@reatom/framework'
 const { api } = await import('../../shared/api')
 type RequestsType = 'get' | 'post' | 'put' | 'delete' | 'patch'
 
-// Тип для извлечения данных из предыдущих ответов
 interface DataExtractor {
-    fromResponse: number; // индекс предыдущего запроса (0-based)
-    searchKey: string; // ключ для поиска в ответе (например: "id", "name")
+    fromResponse: number
+    searchKey: string
 }
 
-// Конфигурация параметра запроса
 interface RequestParams {
-    key: string; // ключ параметра
-    value?: any; // статическое значение
-    extractor?: DataExtractor; // извлечение из предыдущего ответа
-    hideKey?: boolean; // скрыть ключ в URL (для создания /users/2 вместо /users?id=2)
-    flagName?: string; // имя флага для вставки в URL (например: "id" для замены !id! в /api/users/!id!/posts)
+    key: string
+    value?: any
+    extractor?: DataExtractor
+    hideKey?: boolean
+    flagName?: string
 }
 
 interface RequestItem {
-    id: string;
-    method: RequestsType | null;
-    url: string | null;
-    urlParams?: RequestParams[]; // для динамических частей URL (например /users/{id})
-    bodyParams?: RequestParams[]; // параметры для тела запроса
-    queryParams?: RequestParams[]; // параметры для query string
-    description?: string; // описание запроса
-    body?: string; // JSON тело запроса
+    id: string
+    method: RequestsType | null
+    url: string | null
+    urlParams?: RequestParams[]
+    bodyParams?: RequestParams[]
+    queryParams?: RequestParams[]
+    description?: string
+    body?: string
 }
 
-// Результат выполнения запроса
 interface RequestResult {
-    requestId: string;
-    status: number;
-    data: any;
-    error?: string;
-    timestamp: number;
-    success: boolean;
-    url: string;
+    requestId: string
+    status: number
+    data: any
+    error?: string
+    timestamp: number
+    success: boolean
+    url: string
 }
 
-// Состояние выполнения use-case
 interface UseCaseExecution {
-    isExecuting: boolean;
-    currentStep: number;
-    results: RequestResult[];
-    error?: string;
+    isExecuting: boolean
+    currentStep: number
+    results: RequestResult[]
+    error?: string
 }
 
 export const requestsTypeAtom = atom<string[]>(['get', 'post', 'put', 'delete', 'patch'], 'requestsTypeAtom')
@@ -56,7 +52,6 @@ export const requestItemsAtom = atom<RequestItem[]>([{
     description: 'Первый запрос'
 }], 'requestItemsAtom')
 
-// Атом для состояния выполнения use-case
 export const useCaseExecutionAtom = atom<UseCaseExecution>({
     isExecuting: false,
     currentStep: -1,
@@ -75,15 +70,13 @@ export const addRequestItemAction = action((ctx) => {
     requestItemsAtom(ctx, [...currentItems, newItem])
 }, 'addRequestItemAction')
 
-// Функция для умного поиска значения по ключу в JSON
+// Поиск значения по ключу в JSON с поддержкой путей
 function findValueByKey(data: any, searchKey: string): any {
     try {
-        // Если ключ содержит точки, это путь (например: users.0.id)
         if (searchKey.includes('.')) {
             return findValueByPath(data, searchKey)
         }
         
-        // Рекурсивная функция для поиска ключа
         function searchInObject(obj: any, key: string): any[] {
             const results: any[] = []
             
@@ -91,20 +84,16 @@ function findValueByKey(data: any, searchKey: string): any {
                 return results
             }
             
-            // Если это массив, ищем в каждом элементе
             if (Array.isArray(obj)) {
                 for (const item of obj) {
                     results.push(...searchInObject(item, key))
                 }
             }
-            // Если это объект
             else if (typeof obj === 'object') {
-                // Проверяем, есть ли искомый ключ в текущем объекте
                 if (obj.hasOwnProperty(key)) {
                     results.push(obj[key])
                 }
                 
-                // Рекурсивно ищем в дочерних объектах
                 for (const prop in obj) {
                     if (obj.hasOwnProperty(prop)) {
                         results.push(...searchInObject(obj[prop], key))
@@ -116,13 +105,7 @@ function findValueByKey(data: any, searchKey: string): any {
         }
         
         const foundValues = searchInObject(data, searchKey)
-        
-        if (foundValues.length === 0) {
-            return undefined
-        }
-        
-        // Возвращаем первое найденное значение
-        return foundValues[0]
+        return foundValues.length === 0 ? undefined : foundValues[0]
         
     } catch (error) {
         console.error('Error finding value by key:', error)
@@ -130,7 +113,6 @@ function findValueByKey(data: any, searchKey: string): any {
     }
 }
 
-// Функция для поиска значения по пути (например: users.0.id)
 function findValueByPath(obj: any, path: string): any {
     const keys = path.split('.')
     let current = obj
@@ -140,7 +122,6 @@ function findValueByPath(obj: any, path: string): any {
             return undefined
         }
         
-        // Проверяем, является ли ключ числом (индекс массива)
         const numericKey = parseInt(key, 10)
         if (!isNaN(numericKey) && Array.isArray(current)) {
             current = current[numericKey]
@@ -154,7 +135,6 @@ function findValueByPath(obj: any, path: string): any {
     return current
 }
 
-// Функция для построения URL с параметрами
 function buildUrlWithParams(baseUrl: string, urlParams: RequestParams[], results: RequestResult[]): string {
     let url = baseUrl
     
@@ -174,12 +154,10 @@ function buildUrlWithParams(baseUrl: string, urlParams: RequestParams[], results
         }
         
         if (value !== undefined && value !== null) {
-            // Если есть flagName, заменяем флаг в URL
             if (param.flagName) {
                 const flagPattern = `!${param.flagName}!`
                 url = url.replace(flagPattern, value)
             }
-            // Иначе, если hideKey=true, добавляем значение в конец URL
             else if (param.hideKey) {
                 url = url.endsWith('/') ? url + value : url + '/' + value
             }
@@ -298,7 +276,6 @@ export const executeUseCaseAction = action(async (ctx) => {
     }
 }, 'executeUseCaseAction')
 
-// Действие для сброса состояния выполнения
 export const resetUseCaseAction = action((ctx) => {
     useCaseExecutionAtom(ctx, {
         isExecuting: false,
@@ -308,10 +285,9 @@ export const resetUseCaseAction = action((ctx) => {
     })
 }, 'resetUseCaseAction')
 
-// Атом для хранения результатов индивидуальных запросов
 export const individualRequestResultsAtom = atom<Record<string, RequestResult>>({})
 
-// Общая функция для выполнения HTTP-запроса
+// Выполнение HTTP-запроса с обработкой параметров
 async function executeHttpRequest(request: RequestItem, results: RequestResult[]): Promise<RequestResult> {
     let url = request.url!
     if (request.urlParams && request.urlParams.length > 0) {
@@ -328,7 +304,6 @@ async function executeHttpRequest(request: RequestItem, results: RequestResult[]
         queryParams = buildRequestParams(request.queryParams, results)
     }
     
-    // Добавляем URL параметры с hideKey=false и без flagName как query параметры
     if (request.urlParams && request.urlParams.length > 0) {
         const urlQueryParams = buildRequestParams(
             request.urlParams.filter(param => !param.hideKey && !param.flagName), 
@@ -374,7 +349,6 @@ async function executeHttpRequest(request: RequestItem, results: RequestResult[]
     }
 }
 
-// Действие для выполнения индивидуального запроса
 export const executeIndividualRequestAction = action(async (ctx, requestId: string) => {
     const requests = ctx.get(requestItemsAtom)
     const request = requests.find(r => r.id === requestId)
@@ -420,7 +394,6 @@ export const executeIndividualRequestAction = action(async (ctx, requestId: stri
     }
 }, 'executeIndividualRequestAction')
 
-// Функция для извлечения всех возможных путей из JSON объекта
 function extractJsonPaths(obj: any, prefix = ''): string[] {
     const paths: string[] = []
     
@@ -445,7 +418,6 @@ function extractJsonPaths(obj: any, prefix = ''): string[] {
     return paths
 }
 
-// Атом для получения доступных путей из результатов запросов
 export const availablePathsAtom = atom((ctx) => {
     const results = ctx.spy(individualRequestResultsAtom)
     const allPaths: string[] = []
@@ -457,9 +429,7 @@ export const availablePathsAtom = atom((ctx) => {
         }
     })
     
-    // Убираем дубликаты и сортируем
     return [...new Set(allPaths)].sort()
 })
 
-// Экспорт типов для использования в UI
 export type { RequestItem, RequestParams, DataExtractor, RequestResult, UseCaseExecution }
