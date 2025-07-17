@@ -1,10 +1,10 @@
 import React from 'react';
-import { Input, Space, Button, Card, Typography, Select, InputNumber } from 'antd';
+import { Input, Button, InputNumber, AutoComplete } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
+import { reatomComponent } from '@reatom/npm-react';
 import type {RequestParams} from '../../../model';
+import { availablePathsAtom } from '../../../model';
 import styles from './styles.module.css';
-
-const { Text } = Typography;
 
 interface ParameterEditorProps {
     params: RequestParams[];
@@ -14,13 +14,17 @@ interface ParameterEditorProps {
     showHideKey?: boolean;
 }
 
-export const ParameterEditor: React.FC<ParameterEditorProps> = ({ 
+export const ParameterEditor = reatomComponent<ParameterEditorProps>(({ 
+    ctx,
     params, 
     onChange, 
     title, 
     requestIndex,
     showHideKey = false
 }) => {
+    const availablePaths = ctx.spy(availablePathsAtom);
+
+    console.log('availablePaths', availablePaths)
     const addParam = () => {
         onChange([...params, { key: '', value: '' }]);
     };
@@ -37,22 +41,16 @@ export const ParameterEditor: React.FC<ParameterEditorProps> = ({
 
     return (
         <div className={styles.container}>
-            <Text strong>{title}</Text>
-            {params.map((param, index) => (
-                <Card key={index} size="small" className={styles.paramCard}>
-                    <Space direction="vertical" className={styles.paramSpace}>
-                        <Space className={styles.paramRow}>
+            <div className={styles.title}>{title}</div>
+            <div className={styles.paramSpace}>
+                {params.map((param, index) => (
+                    <div key={index} className={styles.paramCard}>
+                        <div className={styles.paramRow}>
                             <Input
                                 placeholder="Ключ"
                                 value={param.key}
                                 onChange={(e) => updateParam(index, { key: e.target.value })}
                                 className={styles.keyInput}
-                            />
-                            <Input
-                                placeholder="Флаг (например: id)"
-                                value={param.flagName || ''}
-                                onChange={(e) => updateParam(index, { flagName: e.target.value || undefined })}
-                                className={styles.flagInput}
                             />
                             {showHideKey && (
                                 <label className={styles.hideKeyLabel}>
@@ -61,34 +59,42 @@ export const ParameterEditor: React.FC<ParameterEditorProps> = ({
                                         checked={param.hideKey || false}
                                         onChange={(e) => updateParam(index, { hideKey: e.target.checked })}
                                     />
-                                    Скрыть ключ
+                                    Скрыть ключ в URL
                                 </label>
                             )}
-                            <Select
-                                placeholder="Тип значения"
-                                value={param.extractor ? 'dynamic' : 'static'}
-                                onChange={(type) => {
-                                    if (type === 'static') {
-                                        updateParam(index, { value: '', extractor: undefined });
-                                    } else {
-                                        updateParam(index, { 
-                                            value: undefined, 
-                                            extractor: { fromResponse: 0, searchKey: '', defaultValue: '' }
-                                        });
-                                    }
-                                }}
-                                className={styles.typeSelect}
-                            >
-                                <Select.Option value="static">Статич.</Select.Option>
-                                <Select.Option value="dynamic">Динамич.</Select.Option>
-                            </Select>
-                            <Button 
-                                type="text" 
-                                danger 
+                            {param.hideKey && (
+                                <Input
+                                    placeholder="Имя флага (например: id для !id!)"
+                                    value={param.flagName || ''}
+                                    onChange={(e) => updateParam(index, { flagName: e.target.value })}
+                                    className={styles.flagInput}
+                                />
+                            )}
+                            <label className={styles.extractorLabel}>
+                                <input
+                                    type="checkbox"
+                                    checked={!!param.extractor}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            updateParam(index, {
+                                                extractor: { fromResponse: 0, searchKey: '' },
+                                                value: undefined
+                                            })
+                                        } else {
+                                            updateParam(index, { extractor: undefined, value: '' })
+                                        }
+                                    }}
+                                />
+                                Использовать данные из предыдущего запроса
+                            </label>
+                            <Button
+                                type="text"
+                                danger
                                 icon={<DeleteOutlined />}
                                 onClick={() => removeParam(index)}
+                                className={styles.deleteButton}
                             />
-                        </Space>
+                        </div>
                         {!param.extractor ? (
                             <Input
                                 placeholder="Значение"
@@ -96,11 +102,11 @@ export const ParameterEditor: React.FC<ParameterEditorProps> = ({
                                 onChange={(e) => updateParam(index, { value: e.target.value })}
                             />
                         ) : (
-                            <Space direction="vertical" className={styles.extractorSpace}>
-                                <Space>
-                                    <Text>Извлечение параметров из ответа запроса № {param.extractor.fromResponse}</Text>
-                                </Space>
-                                <Space className={styles.extractorRow}>
+                            <div className={styles.extractorSpace}>
+                                <div className={styles.extractorLabel}>
+                                    Извлечение параметров из ответа запроса № {param.extractor.fromResponse}
+                                </div>
+                                <div className={styles.extractorRow}>
                                     <InputNumber
                                         placeholder="Индекс запроса"
                                         min={0}
@@ -111,46 +117,32 @@ export const ParameterEditor: React.FC<ParameterEditorProps> = ({
                                         })}
                                         className={styles.indexInput}
                                     />
-                                    <Input
-                                        placeholder="Ключ для поиска (например: id)"
+                                    <AutoComplete
+                                        placeholder="Ключ для поиска (например: users.0.id)"
                                         value={param.extractor.searchKey}
-                                        onChange={(e) => updateParam(index, {
-                                            extractor: { ...param.extractor!, searchKey: e.target.value }
+                                        onChange={(value) => updateParam(index, {
+                                            extractor: { ...param.extractor!, searchKey: value }
                                         })}
+                                        options={availablePaths.map(path => ({ value: path }))}
+                                        filterOption={(inputValue, option) =>
+                                            option?.value.toLowerCase().includes(inputValue.toLowerCase()) || false
+                                        }
+                                        allowClear
                                         className={styles.searchKeyInput}
                                     />
-                                </Space>
-                                <Space className={styles.extractorRow}>
-                                    <Input
-                                        placeholder="Конкретное значение (необязательно)"
-                                        value={param.extractor.specificValue || ''}
-                                        onChange={(e) => updateParam(index, {
-                                            extractor: { ...param.extractor!, specificValue: e.target.value || undefined }
-                                        })}
-                                        className={styles.specificValueInput}
-                                    />
-                                    <Input
-                                        placeholder="По умолчанию"
-                                        value={param.extractor.defaultValue}
-                                        onChange={(e) => updateParam(index, {
-                                            extractor: { ...param.extractor!, defaultValue: e.target.value }
-                                        })}
-                                        className={styles.defaultValueInput}
-                                    />
-                                </Space>
-                            </Space>
+                                </div>
+                            </div>
                         )}
-                    </Space>
-                </Card>
-            ))}
-            <Button 
-                type="dashed" 
-                onClick={addParam}
-                className={styles.addButton}
-                size="small"
-            >
-                Добавить параметр
-            </Button>
+                    </div>
+                ))}
+                <Button
+                    type="dashed"
+                    onClick={addParam}
+                    className={styles.addButton}
+                >
+                    Добавить параметр
+                </Button>
+            </div>
         </div>
     );
-};
+})

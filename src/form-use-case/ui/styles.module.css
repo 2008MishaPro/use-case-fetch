@@ -1,0 +1,196 @@
+/* Главный контейнер формы */
+.formContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  min-height: 100vh;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .formContainer {
+    padding: 16px;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .formContainer {
+    padding: 12px;
+  }
+}
+
+/* Общие стили для карточек */
+.card {
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: #d9d9d9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Общие отступы */
+.spacing {
+  margin-bottom: 16px;
+}
+
+.spacingLarge {
+  margin-bottom: 24px;
+}
+
+/* Общие стили для кнопок */
+.button {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.buttonPrimary {
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.buttonPrimary:hover {
+  background: #40a9ff;
+  border-color: #40a9ff;
+}
+
+.buttonDanger {
+  background: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+.buttonDanger:hover {
+  background: #ff7875;
+  border-color: #ff7875;
+}
+
+/* Общие стили для полей ввода */
+.input {
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  border-color: #40a9ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* Типографика */
+.title {
+  color: #262626;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #595959;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.text {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* Состояния */
+.success {
+  color: #52c41a;
+  background-color: #f6ffed;
+  border-color: #b7eb8f;
+}
+
+.error {
+  color: #ff4d4f;
+  background-color: #fff2f0;
+  border-color: #ffccc7;
+}
+
+.warning {
+  color: #faad14;
+  background-color: #fffbe6;
+  border-color: #ffe58f;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeIn {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Утилиты для flexbox */
+.flex {
+  display: flex;
+}
+
+.flexColumn {
+  flex-direction: column;
+}
+
+.flexWrap {
+  flex-wrap: wrap;
+}
+
+.justifyBetween {
+  justify-content: space-between;
+}
+
+.alignCenter {
+  align-items: center;
+}
+
+.gap8 {
+  gap: 8px;
+}
+
+.gap12 {
+  gap: 12px;
+}
+
+.gap16 {
+  gap: 16px;
+}
+
+/* Утилиты для размеров */
+.fullWidth {
+  width: 100%;
+}
+
+.maxWidth {
+  max-width: 100%;
+}
+
+/* Скрытие элементов на мобильных */
+@media (max-width: 768px) {
+  .hideMobile {
+    display: none;
+  }
+}
+
+/* Показ только на мобильных */
+@media (min-width: 769px) {
+  .showMobile {
+    display: none;
+  }
+}

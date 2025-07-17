@@ -1,3 +1,91 @@
 .controlsContainer {
-  margin-top: 16px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin: 32px 0;
+  padding: 24px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+}
+
+.executeButton {
+  height: 48px;
+  padding: 0 32px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+}
+
+.executeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(24, 144, 255, 0.4);
+}
+
+.executeButton:disabled {
+  transform: none;
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+.resetButton {
+  height: 48px;
+  padding: 0 24px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  border: 1px solid #d9d9d9;
+  background: #ffffff;
+  color: #595959;
+}
+
+.resetButton:hover {
+  border-color: #40a9ff;
+  color: #40a9ff;
+  background: #f0f9ff;
+}
+
+.resetButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+  .controlsContainer {
+    flex-direction: column;
+    gap: 12px;
+    margin: 24px 0;
+    padding: 20px;
+  }
+  
+  .executeButton,
+  .resetButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .controlsContainer {
+    padding: 16px;
+    margin: 20px 0;
+  }
+  
+  .executeButton {
+    height: 44px;
+    font-size: 15px;
+  }
+  
+  .resetButton {
+    height: 40px;
+    font-size: 13px;
+  }
 }
