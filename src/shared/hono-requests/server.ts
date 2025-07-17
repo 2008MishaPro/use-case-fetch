@@ -330,25 +330,25 @@ app.delete('/api/comments/:id', (c) => {
   return c.json({ message: 'Комментарий удален' })
 })
 
-// PATCH запросы
-app.patch('/api/users/:id', async (c) => {
-  const id = parseInt(c.req.param('id'))
-  const body = await c.req.json()
-  const userIndex = users.findIndex(u => u.id === id)
-  
-  if (userIndex === -1) {
-    return c.json({ error: 'Пользователь не найден' }, 404)
-  }
-  
-  // Частичное обновление
-  Object.keys(body).forEach(key => {
-    if (body[key] !== undefined) {
-      users[userIndex][key] = body[key]
-    }
-  })
-  
-  return c.json({ user: users[userIndex], message: 'Пользователь частично обновлен' })
-})
+// // PATCH запросы
+// app.patch('/api/users/:id', async (c) => {
+//   const id = parseInt(c.req.param('id'))
+//   const body = await c.req.json()
+//   const userIndex = users.findIndex(u => u.id === id)
+//
+//   if (userIndex === -1) {
+//     return c.json({ error: 'Пользователь не найден' }, 404)
+//   }
+//
+//   // Частичное обновление
+//   Object.keys(body).forEach(key => {
+//     if (body[key] !== undefined) {
+//       users[userIndex][key] = body[key]
+//     }
+//   })
+//
+//   return c.json({ user: users[userIndex], message: 'Пользователь частично обновлен' })
+// })
 
 app.onError((err, c) => {
   console.error('Ошибка сервера:', err)
