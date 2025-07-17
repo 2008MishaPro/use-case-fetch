@@ -1,7 +1,9 @@
 import React from 'react';
-import { Input, Space, Button, Card, Typography, Select, InputNumber } from 'antd';
+import { Input, Space, Button, Card, Typography, Select, InputNumber, AutoComplete } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
+import { reatomComponent } from '@reatom/npm-react';
 import type {RequestParams} from '../../../model';
+import { availablePathsAtom } from '../../../model';
 import styles from './styles.module.css';
 
 const { Text } = Typography;
@@ -14,13 +16,15 @@ interface ParameterEditorProps {
     showHideKey?: boolean;
 }
 
-export const ParameterEditor: React.FC<ParameterEditorProps> = ({ 
+export const ParameterEditor = reatomComponent<ParameterEditorProps>(({ 
+    ctx,
     params, 
     onChange, 
     title, 
     requestIndex,
     showHideKey = false
 }) => {
+    const availablePaths = ctx.spy(availablePathsAtom);
     const addParam = () => {
         onChange([...params, { key: '', value: '' }]);
     };
@@ -111,13 +115,18 @@ export const ParameterEditor: React.FC<ParameterEditorProps> = ({
                                         })}
                                         className={styles.indexInput}
                                     />
-                                    <Input
-                                        placeholder="Ключ для поиска (например: id)"
+                                    <AutoComplete
+                                        placeholder="Ключ для поиска (например: users.0.id)"
                                         value={param.extractor.searchKey}
-                                        onChange={(e) => updateParam(index, {
-                                            extractor: { ...param.extractor!, searchKey: e.target.value }
+                                        onChange={(value) => updateParam(index, {
+                                            extractor: { ...param.extractor!, searchKey: value }
                                         })}
+                                        options={availablePaths.map(path => ({ value: path, label: path }))}
                                         className={styles.searchKeyInput}
+                                        filterOption={(inputValue, option) =>
+                                            option?.value.toLowerCase().includes(inputValue.toLowerCase()) || false
+                                        }
+                                        allowClear
                                     />
                                 </Space>
                                 <Space className={styles.extractorRow}>
@@ -153,4 +162,4 @@ export const ParameterEditor: React.FC<ParameterEditorProps> = ({
             </Button>
         </div>
     );
-};
+})

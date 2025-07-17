@@ -1,5 +1,9 @@
+.requestContainer {
+  padding-bottom: 16px;
+}
+
 .requestCard {
-  margin-bottom: 16px;
+  /*margin-bottom: 16px;*/
 }
 
 .requestSpace {

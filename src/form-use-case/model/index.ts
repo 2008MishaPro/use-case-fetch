@@ -80,6 +80,11 @@ export const addRequestItemAction = action((ctx) => {
 // Функция для умного поиска значения по ключу в JSON
 function findValueByKey(data: any, searchKey: string, specificValue?: any, defaultValue: any = undefined): any {
     try {
+        // Если ключ содержит точки, это путь (например: users.0.id)
+        if (searchKey.includes('.')) {
+            return findValueByPath(data, searchKey, specificValue, defaultValue)
+        }
+        
         // Рекурсивная функция для поиска ключа
         function searchInObject(obj: any, key: string): any[] {
             const results: any[] = []
@@ -131,6 +136,35 @@ function findValueByKey(data: any, searchKey: string, specificValue?: any, defau
         console.error('Error finding value by key:', error)
         return defaultValue
     }
+}
+
+// Функция для поиска значения по пути (например: users.0.id)
+function findValueByPath(obj: any, path: string, specificValue?: any, defaultValue: any = undefined): any {
+    const keys = path.split('.')
+    let current = obj
+    
+    for (const key of keys) {
+        if (current === null || current === undefined) {
+            return defaultValue
+        }
+        
+        // Проверяем, является ли ключ числом (индекс массива)
+        const numericKey = parseInt(key, 10)
+        if (!isNaN(numericKey) && Array.isArray(current)) {
+            current = current[numericKey]
+        } else if (typeof current === 'object' && current.hasOwnProperty(key)) {
+            current = current[key]
+        } else {
+            return defaultValue
+        }
+    }
+    
+    // Если указано конкретное значение, проверяем соответствие
+    if (specificValue !== undefined && current !== undefined && current !== null && current != specificValue) {
+        return defaultValue
+    }
+    
+    return current !== undefined ? current : defaultValue
 }
 
 // Функция для построения URL с параметрами
@@ -230,67 +264,7 @@ export const executeUseCaseAction = action(async (ctx) => {
                 error: undefined
             })
             
-            let url = request.url!
-            if (request.urlParams && request.urlParams.length > 0) {
-                url = buildUrlWithParams(url, request.urlParams, results)
-            }
-
-            let bodyData: any = undefined
-            if (request.bodyParams && request.bodyParams.length > 0) {
-                bodyData = buildRequestParams(request.bodyParams, results)
-            }
-
-            let queryParams: Record<string, any> = {}
-            if (request.queryParams && request.queryParams.length > 0) {
-                queryParams = buildRequestParams(request.queryParams, results)
-            }
-            
-            // Добавляем URL параметры с hideKey=false и без flagName как query параметры
-            if (request.urlParams && request.urlParams.length > 0) {
-                const urlQueryParams = buildRequestParams(
-                    request.urlParams.filter(param => !param.hideKey && !param.flagName), 
-                    results
-                )
-                queryParams = { ...queryParams, ...urlQueryParams }
-            }
-
-            if (Object.keys(queryParams).length > 0) {
-                const queryString = new URLSearchParams(queryParams).toString()
-                url += (url.includes('?') ? '&' : '?') + queryString
-            }
-
-            let response: any
-            
-            switch (request.method!.toUpperCase()) {
-                case 'GET':
-                    response = await api.get(url)
-                    break
-                case 'POST':
-                    response = await api.post(url, bodyData)
-                    break
-                case 'PUT':
-                    response = await api.put(url, bodyData)
-                    break
-                case 'DELETE':
-                    response = await api.delete(url)
-                    break
-                case 'PATCH':
-                    response = await api.patch(url, bodyData)
-                    break
-                default:
-                    throw new Error(`Неподдерживаемый метод: ${request.method}`)
-            }
-            
-            // Сохраняем результат
-            const result: RequestResult = {
-                requestId: request.id,
-                status: response.status,
-                data: response.data,
-                timestamp: Date.now(),
-                success: response.status >= 200 && response.status < 300,
-                url: url
-            }
-            
+            const result = await executeHttpRequest(request, results)
             results.push(result)
             
             // Обновляем состояние с новым результатом
@@ -350,6 +324,159 @@ export const resetUseCaseAction = action((ctx) => {
         error: undefined
     })
 }, 'resetUseCaseAction')
+
+// Атом для хранения результатов индивидуальных запросов
+export const individualRequestResultsAtom = atom<Record<string, RequestResult>>({})
+
+// Общая функция для выполнения HTTP-запроса
+async function executeHttpRequest(request: RequestItem, results: RequestResult[]): Promise<RequestResult> {
+    let url = request.url!
+    if (request.urlParams && request.urlParams.length > 0) {
+        url = buildUrlWithParams(url, request.urlParams, results)
+    }
+
+    let bodyData: any = undefined
+    if (request.bodyParams && request.bodyParams.length > 0) {
+        bodyData = buildRequestParams(request.bodyParams, results)
+    }
+
+    let queryParams: Record<string, any> = {}
+    if (request.queryParams && request.queryParams.length > 0) {
+        queryParams = buildRequestParams(request.queryParams, results)
+    }
+    
+    // Добавляем URL параметры с hideKey=false и без flagName как query параметры
+    if (request.urlParams && request.urlParams.length > 0) {
+        const urlQueryParams = buildRequestParams(
+            request.urlParams.filter(param => !param.hideKey && !param.flagName), 
+            results
+        )
+        queryParams = { ...queryParams, ...urlQueryParams }
+    }
+
+    if (Object.keys(queryParams).length > 0) {
+        const queryString = new URLSearchParams(queryParams).toString()
+        url += (url.includes('?') ? '&' : '?') + queryString
+    }
+
+    let response: any
+    
+    switch (request.method!.toUpperCase()) {
+        case 'GET':
+            response = await api.get(url)
+            break
+        case 'POST':
+            response = await api.post(url, bodyData)
+            break
+        case 'PUT':
+            response = await api.put(url, bodyData)
+            break
+        case 'DELETE':
+            response = await api.delete(url)
+            break
+        case 'PATCH':
+            response = await api.patch(url, bodyData)
+            break
+        default:
+            throw new Error(`Неподдерживаемый метод: ${request.method}`)
+    }
+    
+    return {
+        requestId: request.id,
+        status: response.status,
+        data: response.data,
+        timestamp: Date.now(),
+        success: response.status >= 200 && response.status < 300,
+        url: url
+    }
+}
+
+// Действие для выполнения индивидуального запроса
+export const executeIndividualRequestAction = action(async (ctx, requestId: string) => {
+    const requests = ctx.get(requestItemsAtom)
+    const request = requests.find(r => r.id === requestId)
+    
+    if (!request || !request.method || !request.url) {
+        throw new Error('Запрос не найден или не настроен')
+    }
+    
+    const currentResults = ctx.get(individualRequestResultsAtom)
+    const allResults = Object.values(currentResults)
+    
+    try {
+        const result = await executeHttpRequest(request, allResults)
+        
+        // Сохраняем результат
+        individualRequestResultsAtom(ctx, {
+            ...currentResults,
+            [requestId]: result
+        })
+        
+        return result
+        
+    } catch (error: any) {
+        const errorMessage = error.response?.data?.message || error.message || 'Неизвестная ошибка'
+        
+        const errorResult: RequestResult = {
+            requestId: request.id,
+            status: error.response?.status || 0,
+            data: error.response?.data || null,
+            timestamp: Date.now(),
+            success: false,
+            url: request.url,
+            error: errorMessage
+        }
+        
+        // Сохраняем результат с ошибкой
+        individualRequestResultsAtom(ctx, {
+            ...currentResults,
+            [requestId]: errorResult
+        })
+        
+        throw error
+    }
+}, 'executeIndividualRequestAction')
+
+// Функция для извлечения всех возможных путей из JSON объекта
+function extractJsonPaths(obj: any, prefix = ''): string[] {
+    const paths: string[] = []
+    
+    if (obj === null || obj === undefined) {
+        return paths
+    }
+    
+    if (Array.isArray(obj)) {
+        obj.forEach((item, index) => {
+            const currentPath = prefix ? `${prefix}.${index}` : `${index}`
+            paths.push(currentPath)
+            paths.push(...extractJsonPaths(item, currentPath))
+        })
+    } else if (typeof obj === 'object') {
+        Object.keys(obj).forEach(key => {
+            const currentPath = prefix ? `${prefix}.${key}` : key
+            paths.push(currentPath)
+            paths.push(...extractJsonPaths(obj[key], currentPath))
+        })
+    }
+    
+    return paths
+}
+
+// Атом для получения доступных путей из результатов запросов
+export const availablePathsAtom = atom((ctx) => {
+    const results = ctx.spy(individualRequestResultsAtom)
+    const allPaths: string[] = []
+    
+    Object.values(results).forEach(result => {
+        if (result.success && result.data) {
+            const paths = extractJsonPaths(result.data)
+            allPaths.push(...paths)
+        }
+    })
+    
+    // Убираем дубликаты и сортируем
+    return [...new Set(allPaths)].sort()
+})
 
 // Экспорт типов для использования в UI
 export type { RequestItem, RequestParams, DataExtractor, RequestResult, UseCaseExecution }

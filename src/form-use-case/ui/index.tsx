@@ -54,6 +54,7 @@ export const FormUseCaseUI = reatomComponent(({ctx}) => {
             {requestItems.map((item, index) => (
                 <RequestItemComponent
                     key={item.id}
+                    ctx={ctx}
                     item={item}
                     index={index}
                     onUpdate={(updates) => updateRequestItem(item.id, updates)}
