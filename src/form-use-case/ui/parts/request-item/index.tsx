@@ -43,225 +43,177 @@ export const RequestItemComponent = reatomComponent<RequestItemProps>(({ ctx, it
 
     const renderResultModal = () => {
         if (!currentResult) return null;
-        
+
         return (
             <Modal
-                title={`Результат запроса ${index + 1}`}
+                title="Результат запроса"
                 open={showResult}
                 onCancel={() => setShowResult(false)}
-                footer={[
-                    <Button key="close" onClick={() => setShowResult(false)}>
-                        Закрыть
-                    </Button>
-                ]}
+                footer={null}
                 width={800}
             >
-                <Space direction="vertical" style={{ width: '100%' }}>
-                    <div>
-                        <strong>URL:</strong> {currentResult.url}
+                <div className={styles.resultCard}>
+                    <div className={`${styles.resultStatus} ${currentResult.success ? styles.success : styles.error}`}>
+                        Статус: {currentResult.status} {currentResult.success ? '✅' : '❌'}
                     </div>
-                    <div>
-                        <strong>Статус:</strong> 
-                        <span style={{ color: currentResult.success ? 'green' : 'red', marginLeft: 8 }}>
-                            {currentResult.status}
-                        </span>
+                    <div className={styles.resultUrl}>
+                        URL: {currentResult.url}
                     </div>
-                    <div>
-                        <strong>Время:</strong> {new Date(currentResult.timestamp).toLocaleString()}
+                    <div style={{ marginBottom: 16, fontSize: '13px', color: '#8c8c8c' }}>
+                        Время: {new Date(currentResult.timestamp).toLocaleString()}
                     </div>
                     {currentResult.error && (
-                        <div>
-                            <strong>Ошибка:</strong>
-                            <div style={{ color: 'red', marginTop: 4 }}>{currentResult.error}</div>
+                        <div style={{ marginBottom: 16, color: '#ff4d4f', fontWeight: 500 }}>
+                            Ошибка: {currentResult.error}
                         </div>
                     )}
                     <div>
-                        <strong>Данные ответа:</strong>
+                        <strong style={{ color: '#262626' }}>Данные:</strong>
                         <pre style={{ 
                             background: '#f5f5f5', 
-                            padding: 12, 
-                            borderRadius: 4, 
-                            maxHeight: 400, 
+                            padding: '16px', 
+                            borderRadius: '6px',
+                            maxHeight: '400px',
                             overflow: 'auto',
-                            fontSize: 12
+                            fontSize: '13px',
+                            lineHeight: '1.5',
+                            border: '1px solid #e8e8e8',
+                            marginTop: '8px'
                         }}>
                             {JSON.stringify(currentResult.data, null, 2)}
                         </pre>
                     </div>
-                </Space>
+                </div>
             </Modal>
         );
     };
+    const cardClassName = `${styles.requestCard} ${currentResult ? (currentResult.success ? styles.success : styles.error) : ''}`;
+
     return (
-        <div style={{ display: 'flex', gap: 16, paddingBottom: 16 }}>
-            <Card 
-                key={item.id}
-                title={`Запрос ${index + 1}: ${item.description || 'Без описания'}`}
-                className={styles.requestCard}
-                style={{ flex: 1 }}
-                extra={
-                <Space direction="horizontal">
-                    <Button 
-                        type="primary" 
-                        icon={<SendOutlined />}
-                        onClick={handleSendRequest}
-                        loading={isExecuting}
-                        disabled={isExecuting}
-                    >
-                        {isExecuting ? 'Выполняется...' : 'Отправить'}
-                    </Button>
-                    {currentResult && (
-                        <Button 
-                            type="default"
-                            onClick={() => setShowResult(true)}
-                            style={{ 
-                                color: currentResult.success ? 'green' : 'red',
-                                borderColor: currentResult.success ? 'green' : 'red'
-                            }}
-                        >
-                            Результат
-                        </Button>
-                    )}
-                    <Popconfirm
-                        title="Вы уверены?"
-                        onConfirm={() => onRemove()}
-                        okText="Да"
-                        cancelText="Нет"
-                    >
-                        <Button
-                            type="text"
-                            danger
-                            icon={<DeleteOutlined />}
-                        />
-                    </Popconfirm>
-                </Space>
-                }
-            >
-            <Space direction="vertical" className={styles.requestSpace}>
-                {/* Метод и URL */}
-                <Space className={styles.methodUrlRow}>
-                    <Select
-                        value={item.method}
-                        onChange={(value) => onUpdate({ method: value })}
-                        className={styles.methodSelect}
-                    >
-                        <Select.Option value="GET">GET</Select.Option>
-                        <Select.Option value="POST">POST</Select.Option>
-                        <Select.Option value="PUT">PUT</Select.Option>
-                        <Select.Option value="DELETE">DELETE</Select.Option>
-                        <Select.Option value="PATCH">PATCH</Select.Option>
-                    </Select>
-                    <Input
-                        placeholder="URL (например: /users)"
-                        value={item.url as string}
-                        onChange={(e) => onUpdate({ url: e.target.value })}
-                        className={styles.urlInput}
-                    />
-                </Space>
-
-                {/* Параметры URL */}
-                <ParameterEditor
-                    ctx={ctx}
-                    params={item.urlParams || []}
-                    onChange={(params) => onUpdate({ urlParams: params })}
-                    title="Параметры URL"
-                    requestIndex={index}
-                    showHideKey={true}
-                />
-
-                {/* Query параметры */}
-                <ParameterEditor
-                    ctx={ctx}
-                    params={item.queryParams || []}
-                    onChange={(params) => onUpdate({ queryParams: params })}
-                    title="Query параметры"
-                    requestIndex={index}
-                />
-
-                {/* Body для POST/PUT/PATCH */}
-                {['POST', 'PUT', 'PATCH'].includes(item.method as string) && (
-                    <>
-                        <ParameterEditor
-                            ctx={ctx}
-                            params={item.bodyParams || []}
-                            onChange={(params) => onUpdate({ bodyParams: params })}
-                            title="Параметры Body"
-                            requestIndex={index}
-                        />
-                        <TextArea
-                            placeholder="Request Body (JSON) - необязательно, если используются параметры Body"
-                            value={item.body}
-                            onChange={(e) => onUpdate({ body: e.target.value })}
-                            rows={4}
-                            className={styles.bodyTextArea}
-                        />
-                    </>
-                )}
-                {/* Описание запроса */}
-                <Space direction="vertical">
-                    Добавить описание запроса
+        <div className={styles.requestContainer}>
+            <Card className={cardClassName}>
+                <div className={styles.requestSpace}>
+                    {/* Описание запроса */}
                     <Input
                         placeholder="Описание запроса"
                         value={item.description}
                         onChange={(e) => onUpdate({ description: e.target.value })}
+                        className={styles.descriptionInput}
+                        size="large"
                     />
-                </Space>
-            </Space>
-            </Card>
-            
-            {currentResult && (
-                <Card 
-                    title="Результат"
-                    size="small"
-                    style={{ 
-                        width: 300,
-                        overflow: 'auto',
-                        borderColor: currentResult.success ? 'green' : 'red'
-                    }}
-                    extra={
-                        <Button 
-                            type="link" 
-                            size="small"
-                            onClick={() => setShowResult(true)}
+
+                    {/* Метод и URL */}
+                    <div className={styles.methodUrlRow}>
+                        <Select
+                            placeholder="Метод"
+                            value={item.method}
+                            onChange={(value) => onUpdate({ method: value })}
+                            className={styles.methodSelect}
+                            size="large"
                         >
-                            Подробнее
+                            <Select.Option value="GET">GET</Select.Option>
+                            <Select.Option value="POST">POST</Select.Option>
+                            <Select.Option value="PUT">PUT</Select.Option>
+                            <Select.Option value="DELETE">DELETE</Select.Option>
+                            <Select.Option value="PATCH">PATCH</Select.Option>
+                        </Select>
+                        <Input
+                            placeholder="URL (например: /api/users)"
+                            value={item.url}
+                            onChange={(e) => onUpdate({ url: e.target.value })}
+                            className={styles.urlInput}
+                            size="large"
+                        />
+                    </div>
+
+                    {/* Параметры URL */}
+                    <ParameterEditor
+                        ctx={ctx}
+                        params={item.urlParams || []}
+                        onChange={(params) => onUpdate({ urlParams: params })}
+                        title="Параметры URL"
+                        requestIndex={index}
+                        showHideKey={true}
+                    />
+
+                    {/* Query параметры */}
+                    <ParameterEditor
+                        ctx={ctx}
+                        params={item.queryParams || []}
+                        onChange={(params) => onUpdate({ queryParams: params })}
+                        title="Query параметры"
+                        requestIndex={index}
+                    />
+
+                    {/* Body для POST/PUT/PATCH */}
+                    {['POST', 'PUT', 'PATCH'].includes(item.method as string) && (
+                        <>
+                            <ParameterEditor
+                                ctx={ctx}
+                                params={item.bodyParams || []}
+                                onChange={(params) => onUpdate({ bodyParams: params })}
+                                title="Параметры Body"
+                                requestIndex={index}
+                            />
+                            <TextArea
+                                placeholder="Request Body (JSON) - необязательно, если используются параметры Body"
+                                value={item.body}
+                                onChange={(e) => onUpdate({ body: e.target.value })}
+                                className={styles.bodyTextArea}
+                                rows={4}
+                            />
+                        </>
+                    )}
+
+                    {/* Кнопки действий */}
+                    <div className={styles.actionButtons}>
+                        <Button 
+                            type="primary" 
+                            icon={<SendOutlined />}
+                            onClick={handleSendRequest}
+                            loading={isExecuting}
+                            className={styles.sendButton}
+                        >
+                            Отправить
                         </Button>
-                    }
-                >
-                    <Space direction="vertical" size="small" style={{ width: '100%' }}>
-                        <div>
-                            <strong>Статус:</strong> 
-                            <span style={{ color: currentResult.success ? 'green' : 'red', marginLeft: 4 }}>
-                                {currentResult.status}
-                            </span>
-                        </div>
-                        <div>
-                            <strong>Время:</strong> {new Date(currentResult.timestamp).toLocaleTimeString()}
-                        </div>
-                        {currentResult.error ? (
-                            <div style={{ color: 'red', fontSize: 12 }}>
-                                {currentResult.error}
-                            </div>
-                        ) : (
-                            <div>
-                                <strong>Данные:</strong>
-                                <pre style={{ 
-                                    background: '#f9f9f9', 
-                                    padding: 8, 
-                                    borderRadius: 4, 
-                                    fontSize: 10,
-                                    maxHeight: "fit-content",
-                                    overflow: 'auto',
-                                    margin: '4px 0 0 0'
-                                }}>
-                                    {JSON.stringify(currentResult.data, null, 2)}
-                                </pre>
-                            </div>
+                        
+                        {currentResult && (
+                            <Button 
+                                onClick={() => setShowResult(true)}
+                                className={styles.resultButton}
+                            >
+                                Результат
+                            </Button>
                         )}
-                    </Space>
-                </Card>
-            )}
-            
+                        
+                        <Popconfirm
+                            title="Удалить запрос?"
+                            description="Вы уверены, что хотите удалить этот запрос?"
+                            onConfirm={onRemove}
+                            okText="Да"
+                            cancelText="Нет"
+                        >
+                            <Button 
+                                danger 
+                                icon={<DeleteOutlined />}
+                                className={styles.deleteButton}
+                            />
+                        </Popconfirm>
+                    </div>
+
+                    {/* Карточка результата */}
+                    {currentResult && (
+                        <div className={`${styles.resultCard} ${currentResult.success ? styles.success : styles.error}`}>
+                            <div className={`${styles.resultStatus} ${currentResult.success ? styles.success : styles.error}`}>
+                                Статус: {currentResult.status} {currentResult.success ? '✅' : '❌'}
+                            </div>
+                            <div className={styles.resultUrl}>
+                                {currentResult.url}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </Card>
             {renderResultModal()}
         </div>
     );

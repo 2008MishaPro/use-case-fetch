@@ -6,8 +6,6 @@ type RequestsType = 'get' | 'post' | 'put' | 'delete' | 'patch'
 interface DataExtractor {
     fromResponse: number; // индекс предыдущего запроса (0-based)
     searchKey: string; // ключ для поиска в ответе (например: "id", "name")
-    specificValue?: any; // конкретное значение (например: 2), если не указано - берется первое найденное
-    defaultValue?: any; // значение по умолчанию если ключ не найден
 }
 
 // Конфигурация параметра запроса
@@ -78,11 +76,11 @@ export const addRequestItemAction = action((ctx) => {
 }, 'addRequestItemAction')
 
 // Функция для умного поиска значения по ключу в JSON
-function findValueByKey(data: any, searchKey: string, specificValue?: any, defaultValue: any = undefined): any {
+function findValueByKey(data: any, searchKey: string): any {
     try {
         // Если ключ содержит точки, это путь (например: users.0.id)
         if (searchKey.includes('.')) {
-            return findValueByPath(data, searchKey, specificValue, defaultValue)
+            return findValueByPath(data, searchKey)
         }
         
         // Рекурсивная функция для поиска ключа
@@ -120,32 +118,26 @@ function findValueByKey(data: any, searchKey: string, specificValue?: any, defau
         const foundValues = searchInObject(data, searchKey)
         
         if (foundValues.length === 0) {
-            return defaultValue
+            return undefined
         }
         
-        // Если указано конкретное значение, ищем его
-        if (specificValue !== undefined) {
-            const found = foundValues.find(val => val == specificValue)
-            return found !== undefined ? found : defaultValue
-        }
-        
-        // Иначе возвращаем первое найденное значение
+        // Возвращаем первое найденное значение
         return foundValues[0]
         
     } catch (error) {
         console.error('Error finding value by key:', error)
-        return defaultValue
+        return undefined
     }
 }
 
 // Функция для поиска значения по пути (например: users.0.id)
-function findValueByPath(obj: any, path: string, specificValue?: any, defaultValue: any = undefined): any {
+function findValueByPath(obj: any, path: string): any {
     const keys = path.split('.')
     let current = obj
     
     for (const key of keys) {
         if (current === null || current === undefined) {
-            return defaultValue
+            return undefined
         }
         
         // Проверяем, является ли ключ числом (индекс массива)
@@ -155,16 +147,11 @@ function findValueByPath(obj: any, path: string, specificValue?: any, defaultVal
         } else if (typeof current === 'object' && current.hasOwnProperty(key)) {
             current = current[key]
         } else {
-            return defaultValue
+            return undefined
         }
     }
     
-    // Если указано конкретное значение, проверяем соответствие
-    if (specificValue !== undefined && current !== undefined && current !== null && current != specificValue) {
-        return defaultValue
-    }
-    
-    return current !== undefined ? current : defaultValue
+    return current
 }
 
 // Функция для построения URL с параметрами
@@ -181,12 +168,8 @@ function buildUrlWithParams(baseUrl: string, urlParams: RequestParams[], results
             if (result) {
                 value = findValueByKey(
                     result.data, 
-                    param.extractor.searchKey, 
-                    param.extractor.specificValue,
-                    param.extractor.defaultValue
+                    param.extractor.searchKey
                 )
-            } else {
-                value = param.extractor.defaultValue
             }
         }
         
@@ -217,11 +200,11 @@ function buildRequestParams(params: RequestParams[], results: RequestResult[]): 
             if (responseResult) {
                 const extractedValue = findValueByKey(
                     responseResult.data, 
-                    param.extractor.searchKey, 
-                    param.extractor.specificValue,
-                    param.extractor.defaultValue
+                    param.extractor.searchKey
                 )
-                result[param.key] = extractedValue
+                if (extractedValue !== undefined) {
+                    result[param.key] = extractedValue
+                }
             }
         }
     })

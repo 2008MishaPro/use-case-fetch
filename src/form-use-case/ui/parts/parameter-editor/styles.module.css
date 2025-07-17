@@ -1,63 +1,230 @@
 .container {
   width: 100%;
-  min-width: 40vw;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.title {
+  color: #262626;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e8e8e8;
 }
 
 .paramCard {
-  margin-top: 8px;
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.paramCard:hover {
+  border-color: #d9d9d9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .paramSpace {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .paramRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .keyInput {
-    width: 200px;
+  min-width: 150px;
+  flex: 1;
+  max-width: 200px;
 }
 
 .flagInput {
-    width: 200px;
+  min-width: 150px;
+  flex: 1;
+  max-width: 200px;
 }
 
 .hideKeyLabel {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  white-space: nowrap;
+  color: #595959;
+  font-size: 14px;
 }
 
 .typeSelect {
-  width: 100px;
+  min-width: 120px;
+  flex-shrink: 0;
 }
 
 .extractorSpace {
   width: 100%;
+  background: #f9f9f9;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 8px;
 }
 
 .extractorRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
   width: 100%;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.extractorRow:last-child {
+  margin-bottom: 0;
+}
+
+.extractorLabel {
+  color: #595959;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
 .indexInput {
-  width: 200px;
+  min-width: 100px;
+  max-width: 150px;
 }
 
 .searchKeyInput {
   flex: 1;
+  min-width: 200px;
 }
 
-.specificValueInput {
-  flex: 1;
-}
 
-.defaultValueInput {
-  width: 200px;
-}
 
 .addButton {
   width: 100%;
-  margin-top: 8px;
+  height: 36px;
+  margin-top: 12px;
+  border: 1px dashed #d9d9d9;
+  background: #ffffff;
+  color: #595959;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.addButton:hover {
+  border-color: #40a9ff;
+  color: #40a9ff;
+  background: #f0f9ff;
+}
+
+.deleteButton {
+  color: #ff4d4f;
+  border-color: #ffccc7;
+  background: #fff2f0;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.deleteButton:hover {
+  background: #ff4d4f;
+  color: #ffffff;
+  border-color: #ff4d4f;
+}
+
+/* Адаптивность для планшетов */
+@media (max-width: 1024px) {
+  .container {
+    padding: 14px;
+  }
+  
+  .paramRow {
+    gap: 8px;
+  }
+  
+  .extractorRow {
+    gap: 8px;
+  }
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .paramRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .extractorRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .keyInput,
+  .flagInput,
+  .typeSelect,
+  .indexInput,
+  .searchKeyInput,
+  .specificValueInput,
+  .defaultValueInput {
+    min-width: auto;
+    max-width: none;
+    width: 100%;
+  }
+  
+  .hideKeyLabel {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+  
+  .title {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  
+  .paramCard {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .extractorSpace {
+    padding: 10px;
+  }
+  
+  .extractorLabel {
+    font-size: 12px;
+  }
 }
