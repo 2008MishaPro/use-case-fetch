@@ -43,6 +43,13 @@ interface UseCaseExecution {
     error?: string
 }
 
+interface RequestPathsData {
+    index: number
+    paths: string[]
+}
+
+export const baseUrlAtom = atom<string>('', 'baseUrlAtom')
+
 export const requestsTypeAtom = atom<string[]>(['get', 'post', 'put', 'delete', 'patch'], 'requestsTypeAtom')
 
 export const requestItemsAtom = atom<RequestItem[]>([{
@@ -225,7 +232,7 @@ export const executeUseCaseAction = action(async (ctx) => {
                 error: undefined
             })
             
-            const result = await executeHttpRequest(request, results)
+            const result = await executeHttpRequest(ctx, request, results)
             results.push(result)
             
             // Обновляем состояние с новым результатом
@@ -288,8 +295,19 @@ export const resetUseCaseAction = action((ctx) => {
 export const individualRequestResultsAtom = atom<Record<string, RequestResult>>({})
 
 // Выполнение HTTP-запроса с обработкой параметров
-async function executeHttpRequest(request: RequestItem, results: RequestResult[]): Promise<RequestResult> {
+async function executeHttpRequest(ctx: any, request: RequestItem, results: RequestResult[]): Promise<RequestResult> {
+    const baseUrl = ctx.get(baseUrlAtom)
     let url = request.url!
+    
+    // Объединяем базовый URL с конкретным URL
+    const fullUrl = baseUrl.endsWith('/') && url.startsWith('/') 
+        ? baseUrl + url.slice(1)
+        : baseUrl.endsWith('/') || url.startsWith('/')
+        ? baseUrl + url
+        : baseUrl + '/' + url
+    
+    url = fullUrl
+    
     if (request.urlParams && request.urlParams.length > 0) {
         url = buildUrlWithParams(url, request.urlParams, results)
     }
@@ -361,8 +379,8 @@ export const executeIndividualRequestAction = action(async (ctx, requestId: stri
     const allResults = Object.values(currentResults)
     
     try {
-        const result = await executeHttpRequest(request, allResults)
-        
+        const result = await executeHttpRequest(ctx, request, allResults)
+
         // Сохраняем результат
         individualRequestResultsAtom(ctx, {
             ...currentResults,
@@ -392,6 +410,7 @@ export const executeIndividualRequestAction = action(async (ctx, requestId: stri
         
         throw error
     }
+
 }, 'executeIndividualRequestAction')
 
 function extractJsonPaths(obj: any, prefix = ''): string[] {
@@ -420,16 +439,21 @@ function extractJsonPaths(obj: any, prefix = ''): string[] {
 
 export const availablePathsAtom = atom((ctx) => {
     const results = ctx.spy(individualRequestResultsAtom)
-    const allPaths: string[] = []
+    const requests = ctx.spy(requestItemsAtom)
+    const pathsData: RequestPathsData[] = []
     
-    Object.values(results).forEach(result => {
-        if (result.success && result.data) {
+    requests.forEach((request, index) => {
+        const result = results[request.id]
+        if (result && result.success && result.data) {
             const paths = extractJsonPaths(result.data)
-            allPaths.push(...paths)
+            pathsData.push({
+                index: index,
+                paths: [...new Set(paths)].sort()
+            })
         }
     })
     
-    return [...new Set(allPaths)].sort()
+    return pathsData
 })
 
-export type { RequestItem, RequestParams, DataExtractor, RequestResult, UseCaseExecution }
+export type { RequestItem, RequestParams, DataExtractor, RequestResult, UseCaseExecution, RequestPathsData }

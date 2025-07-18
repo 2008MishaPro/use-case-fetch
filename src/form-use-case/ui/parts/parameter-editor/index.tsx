@@ -1,4 +1,3 @@
-import React from 'react';
 import { Input, Button, InputNumber, AutoComplete } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { reatomComponent } from '@reatom/npm-react';
@@ -24,7 +23,6 @@ export const ParameterEditor = reatomComponent<ParameterEditorProps>(({
 }) => {
     const availablePaths = ctx.spy(availablePathsAtom);
 
-    console.log('availablePaths', availablePaths)
     const addParam = () => {
         onChange([...params, { key: '', value: '' }]);
     };
@@ -123,7 +121,11 @@ export const ParameterEditor = reatomComponent<ParameterEditorProps>(({
                                         onChange={(value) => updateParam(index, {
                                             extractor: { ...param.extractor!, searchKey: value }
                                         })}
-                                        options={availablePaths.map(path => ({ value: path }))}
+                                        options={
+                                            availablePaths
+                                                .find(pathData => pathData.index === param.extractor!.fromResponse)
+                                                ?.paths.map(path => ({ value: path })) || []
+                                        }
                                         filterOption={(inputValue, option) =>
                                             option?.value.toLowerCase().includes(inputValue.toLowerCase()) || false
                                         }

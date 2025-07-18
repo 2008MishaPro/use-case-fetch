@@ -8,6 +8,7 @@ import {
     type RequestItem
 } from "../model";
 import { FormHeader } from "./parts/form-header";
+import { UrlInput } from "./parts/url-input";
 import { RequestItemComponent as RequestItemComponent } from "./parts/request-item";
 import { ExecutionControls } from "./parts/execution-controls";
 import { ExecutionResults } from "./parts/execution-results";
@@ -51,12 +52,12 @@ export const FormUseCaseUI = reatomComponent(({ctx}) => {
     return (
         <div className={styles.formContainer}>
             <FormHeader onAddRequest={addNewRequest} />
+            <UrlInput />
             
             <div className={styles.spacingLarge}>
                 {requestItems.map((item, index) => (
                     <RequestItemComponent
                         key={item.id}
-                        ctx={ctx}
                         item={item}
                         index={index}
                         onUpdate={(updates) => updateRequestItem(item.id, updates)}

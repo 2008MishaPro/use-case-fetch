@@ -1,0 +1,23 @@
+.container {
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #fafafa;
+    border-radius: 8px;
+    border: 1px solid #e8e8e8;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #262626;
+    margin-bottom: 8px;
+}
+
+.urlInput {
+    width: 100%;
+}
+
+.urlInput:focus {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
