@@ -1,0 +1,109 @@
+.resultSidebar {
+  width: 360px;
+  max-width: 360px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.resultCollapse .ant-collapse-header {
+  padding: 12px 20px !important;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.resultCollapse .ant-collapse-content {
+  border: none;
+}
+
+.resultCollapse .ant-collapse-content-box {
+  padding: 0;
+}
+
+
+
+.resultHeaderContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.resultHeaderContent span {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.closeButton {
+  padding: 4px;
+  min-width: auto;
+  height: auto;
+  color: #8c8c8c;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.closeButton:hover {
+  color: #262626;
+  background: #f0f0f0;
+}
+
+.resultContent {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.resultStatus {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.resultStatus.success {
+  color: #52c41a;
+}
+
+.resultStatus.error {
+  color: #ff4d4f;
+}
+
+.resultUrl {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+  color: #8c8c8c;
+  word-break: break-all;
+  margin-bottom: 16px;
+}
+
+.timestamp {
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #8c8c8c;
+}
+
+.errorMessage {
+  margin-bottom: 16px;
+  color: #ff4d4f;
+  font-weight: 500;
+}
+
+.dataLabel {
+  color: #262626;
+}
+
+.dataContent {
+  background: #f5f5f5;
+  padding: 16px;
+  border-radius: 6px;
+  max-height: 400px;
+  overflow: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  border: 1px solid #e8e8e8;
+  margin-top: 8px;
+  color: black;
+}
