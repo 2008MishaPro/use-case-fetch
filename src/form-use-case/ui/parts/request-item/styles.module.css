@@ -1,6 +1,13 @@
 .requestContainer {
-  width: 800px;
+  display: flex;
+  gap: 20px;
   margin-bottom: 24px;
+  align-items: flex-start;
+}
+
+.requestContent {
+  width: 800px;
+  flex-shrink: 0;
 }
 
 .requestCollapse {
@@ -174,10 +181,17 @@
   }
 }
 
+
+
 /* Адаптивность для мобильных */
 @media (max-width: 768px) {
   .requestContainer {
+    flex-direction: column;
     margin-bottom: 20px;
+  }
+  
+  .requestContent {
+    width: 100%;
   }
   
   .requestCollapse .ant-collapse-content-box {

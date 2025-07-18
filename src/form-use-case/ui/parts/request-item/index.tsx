@@ -1,10 +1,11 @@
 import React from 'react';
-import { Input, Select, Button, message, Modal, Popconfirm, Collapse } from 'antd';
+import { Input, Select, Button, message, Popconfirm, Collapse } from 'antd';
 import { DeleteOutlined, SendOutlined } from '@ant-design/icons';
 import { reatomComponent } from '@reatom/npm-react';
 import type { RequestItem } from '../../../model';
 import { executeIndividualRequestAction, individualRequestResultsAtom } from '../../../model';
 import { ParameterEditor } from '../parameter-editor';
+import { ResultCard } from '../result-card';
 import styles from './styles.module.css';
 
 const { TextArea } = Input;
@@ -41,52 +42,7 @@ export const RequestItemComponent = reatomComponent<RequestItemProps>(({ ctx, it
         }
     };
 
-    const renderResultModal = () => {
-        if (!currentResult) return null;
 
-        return (
-            <Modal
-                title="Результат запроса"
-                open={showResult}
-                onCancel={() => setShowResult(false)}
-                footer={null}
-                width={800}
-            >
-                <div className={styles.resultCard}>
-                    <div className={`${styles.resultStatus} ${currentResult.success ? styles.success : styles.error}`}>
-                        Статус: {currentResult.status} {currentResult.success ? '✅' : '❌'}
-                    </div>
-                    <div className={styles.resultUrl}>
-                        URL: {currentResult.url}
-                    </div>
-                    <div style={{ marginBottom: 16, fontSize: '13px', color: '#8c8c8c' }}>
-                        Время: {new Date(currentResult.timestamp).toLocaleString()}
-                    </div>
-                    {currentResult.error && (
-                        <div style={{ marginBottom: 16, color: '#ff4d4f', fontWeight: 500 }}>
-                            Ошибка: {currentResult.error}
-                        </div>
-                    )}
-                    <div>
-                        <strong style={{ color: '#262626' }}>Данные:</strong>
-                        <pre style={{ 
-                            background: '#f5f5f5', 
-                            padding: '16px', 
-                            borderRadius: '6px',
-                            maxHeight: '400px',
-                            overflow: 'auto',
-                            fontSize: '13px',
-                            lineHeight: '1.5',
-                            border: '1px solid #e8e8e8',
-                            marginTop: '8px'
-                        }}>
-                            {JSON.stringify(currentResult.data, null, 2)}
-                        </pre>
-                    </div>
-                </div>
-            </Modal>
-        );
-    };
     const getRequestStatus = () => {
         if (!currentResult) return '';
         return currentResult.success ? ' ✅' : ' ❌';
@@ -101,6 +57,7 @@ export const RequestItemComponent = reatomComponent<RequestItemProps>(({ ctx, it
 
     return (
         <div className={styles.requestContainer}>
+            <div className={styles.requestContent}>
             <Collapse defaultActiveKey={[]} className={styles.requestCollapse}>
                 <Collapse.Panel key="1" header={getHeaderTitle()}>
                     <div className={styles.requestSpace}>
@@ -179,10 +136,10 @@ export const RequestItemComponent = reatomComponent<RequestItemProps>(({ ctx, it
                         
                         {currentResult && (
                             <Button 
-                                onClick={() => setShowResult(true)}
+                                onClick={() => setShowResult(!showResult)}
                                 className={styles.resultButton}
                             >
-                                Результат
+                                {showResult ? 'Скрыть результат' : 'Показать результат'}
                             </Button>
                         )}
                         
@@ -215,7 +172,13 @@ export const RequestItemComponent = reatomComponent<RequestItemProps>(({ ctx, it
                     </div>
                 </Collapse.Panel>
             </Collapse>
-            {renderResultModal()}
+            </div>
+            {currentResult && showResult && (
+                <ResultCard 
+                    result={currentResult} 
+                    onClose={() => setShowResult(false)} 
+                />
+            )}
         </div>
     );
 });

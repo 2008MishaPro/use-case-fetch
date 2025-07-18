@@ -4,178 +4,299 @@
   background: #fafafa;
   border: 1px solid #f0f0f0;
   border-radius: 8px;
-  padding: 16px;
+  padding: 20px;
   margin-bottom: 16px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: visible;
   word-wrap: break-word;
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e8e8e8;
 }
 
 .title {
   color: #262626;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e8e8e8;
+  margin: 0;
 }
 
-.paramCard {
+.infoIcon {
+  color: #1890ff;
+  font-size: 16px;
+  cursor: help;
+}
+
+.paramCollapse {
+  background: transparent;
+  border: none;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.paramPanel {
   background: #ffffff;
   border: 1px solid #e8e8e8;
-  border-radius: 6px;
-  padding: 16px;
-  margin-bottom: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
   transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
-.paramCard:hover {
-  border-color: #d9d9d9;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+.paramPanel:hover {
+  border-color: #1890ff;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.1);
+}
+
+.paramPanel .ant-collapse-header {
+  padding: 12px 16px !important;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e8e8e8;
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.paramPanel .ant-collapse-content {
+  border-top: none;
+  background: #ffffff;
+  border-radius: 0 0 8px 8px;
+}
+
+.paramPanel .ant-collapse-content-box {
+  padding: 0;
+}
+
+.paramHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.paramHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.paramIcon {
+  color: #1890ff;
+  font-size: 14px;
+}
+
+.paramNumber {
+  font-weight: 600;
+  color: #1890ff;
+  font-size: 14px;
+}
+
+.paramPreview {
+  color: #8c8c8c;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.paramContent {
+  padding: 20px;
 }
 
 .paramSpace {
   width: 100%;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.paramRow {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  width: 100%;
-  max-width: 100%;
-  flex-wrap: wrap;
-  overflow: hidden;
+  gap: 16px;
   box-sizing: border-box;
 }
 
-.keyInput {
-  flex: 1;
-  min-width: 0;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-sizing: border-box;
+.inputGroup {
+  margin-bottom: 16px;
 }
 
-.flagInput {
-  flex: 1;
-  min-width: 0;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-sizing: border-box;
-}
-
-.hideKeyLabel {
+.inputLabel {
   display: flex;
   align-items: center;
   gap: 6px;
-  white-space: nowrap;
-  color: #595959;
+  color: #262626;
   font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
+.labelIcon {
+  color: #1890ff;
+  font-size: 12px;
+}
 
-
-.extractorSpace {
-  width: 100%;
-  max-width: 100%;
-  background: #f9f9f9;
+.optionGroup {
+  background: #f8f9fa;
   border: 1px solid #e8e8e8;
   border-radius: 6px;
-  padding: 12px;
-  margin-top: 8px;
-  box-sizing: border-box;
-  overflow: hidden;
+  padding: 16px;
+  margin-bottom: 16px;
 }
 
-.extractorRow {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  width: 100%;
-  max-width: 100%;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-.extractorRow:last-child {
-  margin-bottom: 0;
-}
-
-.extractorLabel {
+.checkboxLabel {
   display: flex;
   align-items: center;
   gap: 8px;
   color: #595959;
   font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 8px;
   cursor: pointer;
   user-select: none;
+  margin-bottom: 12px;
 }
 
-.extractorLabel input[type="checkbox"] {
+.checkboxLabel:last-child {
+  margin-bottom: 0;
+}
+
+.checkboxLabel input[type="checkbox"] {
   margin: 0;
   cursor: pointer;
 }
 
+.linkIcon {
+  color: #52c41a;
+  font-size: 14px;
+}
+
+.tooltipIcon {
+  color: #1890ff;
+  font-size: 12px;
+  cursor: help;
+}
+
+.divider {
+  margin: 16px 0;
+  border-color: #e8e8e8;
+}
+
+.valueSection {
+  margin-top: 8px;
+}
+
+.valueTypeSelector {
+  margin-bottom: 16px;
+}
+
+.keyInput,
+.flagInput,
+.valueInput {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+  transition: all 0.2s ease;
+}
+
+.keyInput:focus,
+.flagInput:focus,
+.valueInput:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+
+
+.extractorSpace {
+  background: #f0f9ff;
+  border: 1px solid #bae7ff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.extractorTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1890ff;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.extractorIcon {
+  color: #52c41a;
+  font-size: 14px;
+}
+
+.extractorControls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.helperText {
+  color: #8c8c8c;
+  font-size: 12px;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
 .indexInput {
-  min-width: 0;
-  width: 100px;
-  max-width: 150px;
-  box-sizing: border-box;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+}
+
+.indexInput:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
 }
 
 .searchKeyInput {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-sizing: border-box;
+  width: 100%;
+  border-radius: 6px;
 }
-
-
 
 .addButton {
   width: 100%;
-  height: 36px;
-  margin-top: 12px;
-  border: 1px dashed #d9d9d9;
+  height: 44px;
+  margin-top: 20px;
+  border: 2px dashed #1890ff;
   background: #ffffff;
-  color: #595959;
-  border-radius: 6px;
+  color: #1890ff;
+  border-radius: 8px;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
+  font-weight: 500;
 }
 
 .addButton:hover {
   border-color: #40a9ff;
   color: #40a9ff;
   background: #f0f9ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
 }
 
 .deleteButton {
   color: #ff4d4f;
-  border-color: #ffccc7;
+  border: 1px solid #ffccc7;
   background: #fff2f0;
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
+  border-radius: 6px;
   transition: all 0.2s ease;
 }
 
@@ -183,20 +304,21 @@
   background: #ff4d4f;
   color: #ffffff;
   border-color: #ff4d4f;
+  transform: scale(1.05);
 }
 
 /* Адаптивность для планшетов */
 @media (max-width: 1024px) {
   .container {
-    padding: 14px;
+    padding: 16px;
   }
   
-  .paramRow {
-    gap: 8px;
+  .paramContent {
+    padding: 16px;
   }
   
-  .extractorRow {
-    gap: 8px;
+  .extractorControls {
+    gap: 12px;
   }
 }
 
@@ -206,56 +328,122 @@
     padding: 12px;
   }
   
-  .paramRow {
+  .titleSection {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
     gap: 8px;
   }
   
-  .extractorRow {
+  .paramPanel {
+    margin-bottom: 12px;
+  }
+  
+  .paramPanel .ant-collapse-header {
+    padding: 10px 12px !important;
+    font-size: 13px;
+  }
+  
+  .paramNumber {
+    font-size: 13px;
+  }
+  
+  .paramPreview {
+    font-size: 11px;
+  }
+  
+  .paramContent {
+    padding: 12px;
+  }
+  
+  .paramHeader {
+    padding: 8px 12px;
+  }
+  
+  .inputGroup {
     flex-direction: column;
-    align-items: stretch;
     gap: 8px;
   }
   
-  .keyInput,
-  .flagInput,
-  .typeSelect,
-  .indexInput,
-  .searchKeyInput,
-  .specificValueInput,
-  .defaultValueInput {
-    min-width: auto;
-    max-width: none;
-    width: 100%;
+  .optionGroup {
+    padding: 12px;
+    flex-direction: column;
+    gap: 8px;
   }
   
-  .hideKeyLabel {
-    justify-content: center;
+  .extractorSpace {
+    padding: 12px;
+  }
+  
+  .extractorControls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .checkboxLabel {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .addButton {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+  
+  .deleteButton {
+    padding: 4px;
   }
 }
 
 @media (max-width: 480px) {
   .container {
-    padding: 10px;
+    padding: 8px;
     margin-bottom: 12px;
   }
   
   .title {
-    font-size: 14px;
-    margin-bottom: 12px;
+    font-size: 16px;
   }
   
-  .paramCard {
-    padding: 12px;
+  .paramPanel {
     margin-bottom: 8px;
   }
   
-  .extractorSpace {
-    padding: 10px;
+  .paramPanel .ant-collapse-header {
+    padding: 8px 10px !important;
+    font-size: 12px;
   }
   
-  .extractorLabel {
+  .paramNumber {
     font-size: 12px;
+  }
+  
+  .paramPreview {
+    font-size: 10px;
+  }
+  
+  .paramContent {
+    padding: 8px;
+  }
+  
+  .paramHeader {
+    padding: 6px 8px;
+  }
+  
+  .inputLabel {
+    font-size: 12px;
+  }
+  
+  .checkboxLabel {
+    font-size: 12px;
+  }
+  
+  .extractorTitle {
+    font-size: 12px;
+  }
+  
+  .addButton {
+    height: 40px;
+    font-size: 12px;
+    padding: 6px 12px;
   }
 }
