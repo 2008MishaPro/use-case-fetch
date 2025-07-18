@@ -1,4 +1,4 @@
-import { Input, Button, InputNumber, AutoComplete, Tooltip, Card, Divider, Collapse } from 'antd';
+import { Input, Button, InputNumber, AutoComplete, Tooltip, Divider, Collapse } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined, LinkOutlined, EditOutlined, SettingOutlined } from '@ant-design/icons';
 import { reatomComponent } from '@reatom/npm-react';
 import type {RequestParams} from '../../../model';
