@@ -122,7 +122,7 @@ export const RequestItemComponent = reatomComponent<RequestItemProps>(({ ctx, it
                         </Select>
                         <Input
                             placeholder="URL (например: /api/users)"
-                            value={item.url}
+                            value={item.url as string}
                             onChange={(e) => onUpdate({ url: e.target.value })}
                             className={styles.urlInput}
                             size="large"
@@ -131,7 +131,6 @@ export const RequestItemComponent = reatomComponent<RequestItemProps>(({ ctx, it
 
                     {/* Параметры URL */}
                     <ParameterEditor
-                        ctx={ctx}
                         params={item.urlParams || []}
                         onChange={(params) => onUpdate({ urlParams: params })}
                         title="Параметры URL"
@@ -141,7 +140,6 @@ export const RequestItemComponent = reatomComponent<RequestItemProps>(({ ctx, it
 
                     {/* Query параметры */}
                     <ParameterEditor
-                        ctx={ctx}
                         params={item.queryParams || []}
                         onChange={(params) => onUpdate({ queryParams: params })}
                         title="Query параметры"
@@ -152,7 +150,6 @@ export const RequestItemComponent = reatomComponent<RequestItemProps>(({ ctx, it
                     {['POST', 'PUT', 'PATCH'].includes(item.method as string) && (
                         <>
                             <ParameterEditor
-                                ctx={ctx}
                                 params={item.bodyParams || []}
                                 onChange={(params) => onUpdate({ bodyParams: params })}
                                 title="Параметры Body"
