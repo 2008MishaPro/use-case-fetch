@@ -7,8 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "api": "yarn tsx src/shared/hono-requests/start-server.ts"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@reatom/framework": "^3.4.64",
