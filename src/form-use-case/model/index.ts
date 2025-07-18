@@ -23,7 +23,6 @@ interface RequestItem {
     bodyParams?: RequestParams[]
     queryParams?: RequestParams[]
     description?: string
-    body?: string
 }
 
 interface RequestResult {

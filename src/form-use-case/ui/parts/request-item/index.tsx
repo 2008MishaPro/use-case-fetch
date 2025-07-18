@@ -8,8 +8,6 @@ import { ParameterEditor } from '../parameter-editor';
 import { ResultCard } from '../result-card';
 import styles from './styles.module.css';
 
-const { TextArea } = Input;
-
 interface RequestItemProps {
     item: RequestItem;
     index: number;
@@ -105,21 +103,12 @@ export const RequestItemComponent = reatomComponent<RequestItemProps>(({ ctx, it
 
                     {/* Body для POST/PUT/PATCH */}
                     {['POST', 'PUT', 'PATCH'].includes(item.method as string) && (
-                        <>
-                            <ParameterEditor
-                                params={item.bodyParams || []}
-                                onChange={(params) => onUpdate({ bodyParams: params })}
-                                title="Параметры Body"
-                                requestIndex={index}
-                            />
-                            <TextArea
-                                placeholder="Request Body (JSON) - необязательно, если используются параметры Body"
-                                value={item.body}
-                                onChange={(e) => onUpdate({ body: e.target.value })}
-                                className={styles.bodyTextArea}
-                                rows={4}
-                            />
-                        </>
+                        <ParameterEditor
+                            params={item.bodyParams || []}
+                            onChange={(params) => onUpdate({ bodyParams: params })}
+                            title="Параметры Body"
+                            requestIndex={index}
+                        />
                     )}
 
                     {/* Кнопки действий */}

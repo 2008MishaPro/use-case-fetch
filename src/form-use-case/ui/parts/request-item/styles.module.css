@@ -76,17 +76,6 @@
   min-width: 0;
 }
 
-.bodyTextArea {
-  width: 100%;
-  min-height: 120px;
-  resize: vertical;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-
-
 .actionButtons {
   display: flex;
   gap: 12px;
@@ -246,10 +235,7 @@
     gap: 12px;
   }
   
-  .bodyTextArea {
-    min-height: 100px;
-    font-size: 14px;
-  }
+
   
   .actionButtons {
     margin-top: 12px;
