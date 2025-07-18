@@ -8,9 +8,11 @@ import {
     type RequestItem
 } from "../model";
 import { FormHeader } from "./parts/form-header";
+import { UrlInput } from "./parts/url-input";
 import { RequestItemComponent as RequestItemComponent } from "./parts/request-item";
 import { ExecutionControls } from "./parts/execution-controls";
 import { ExecutionResults } from "./parts/execution-results";
+import styles from './styles.module.css';
 
 
 export const FormUseCaseUI = reatomComponent(({ctx}) => {
@@ -48,18 +50,21 @@ export const FormUseCaseUI = reatomComponent(({ctx}) => {
 
 
     return (
-        <div>
+        <div className={styles.formContainer}>
             <FormHeader onAddRequest={addNewRequest} />
+            <UrlInput />
             
-            {requestItems.map((item, index) => (
-                <RequestItemComponent
-                    key={item.id}
-                    item={item}
-                    index={index}
-                    onUpdate={(updates) => updateRequestItem(item.id, updates)}
-                    onRemove={() => removeRequestItem(item.id)}
-                />
-            ))}
+            <div className={styles.spacingLarge}>
+                {requestItems.map((item, index) => (
+                    <RequestItemComponent
+                        key={item.id}
+                        item={item}
+                        index={index}
+                        onUpdate={(updates) => updateRequestItem(item.id, updates)}
+                        onRemove={() => removeRequestItem(item.id)}
+                    />
+                ))}
+            </div>
 
             <ExecutionControls
                 onExecute={handleExecuteUseCase}

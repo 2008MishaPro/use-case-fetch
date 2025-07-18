@@ -1,8 +1,11 @@
 import React from 'react';
-import { Input, Space, Button, Card, Select } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
-import type {RequestItem} from '../../../model';
+import { Input, Select, Button, message, Popconfirm, Collapse } from 'antd';
+import { DeleteOutlined, SendOutlined } from '@ant-design/icons';
+import { reatomComponent } from '@reatom/npm-react';
+import type { RequestItem } from '../../../model';
+import { executeIndividualRequestAction, individualRequestResultsAtom } from '../../../model';
 import { ParameterEditor } from '../parameter-editor';
+import { ResultCard } from '../result-card';
 import styles from './styles.module.css';
 
 const { TextArea } = Input;
@@ -14,91 +17,168 @@ interface RequestItemProps {
     onRemove: () => void;
 }
 
-export const RequestItemComponent: React.FC<RequestItemProps> = ({
-    item, 
-    index, 
-    onUpdate, 
-    onRemove 
-}) => {
+export const RequestItemComponent = reatomComponent<RequestItemProps>(({ ctx, item, index, onUpdate, onRemove }) => {
+    const individualResults = ctx.spy(individualRequestResultsAtom);
+    const currentResult = individualResults[item.id];
+    const [isExecuting, setIsExecuting] = React.useState(false);
+    const [showResult, setShowResult] = React.useState(false);
+
+    const handleSendRequest = async () => {
+        if (!item.method || !item.url) {
+            message.error('Метод и URL обязательны для выполнения запроса');
+            return;
+        }
+        
+        setIsExecuting(true);
+        try {
+            await executeIndividualRequestAction(ctx, item.id);
+            message.success(`Запрос ${index + 1} выполнен успешно`);
+            setShowResult(true);
+        } catch (error: any) {
+            message.error(`Ошибка выполнения запроса ${index + 1}: ${error.message}`);
+            setShowResult(true);
+        } finally {
+            setIsExecuting(false);
+        }
+    };
+
+
+    const getRequestStatus = () => {
+        if (!currentResult) return '';
+        return currentResult.success ? ' ✅' : ' ❌';
+    };
+
+    const getHeaderTitle = () => {
+        const baseTitle = `Запрос ${index + 1}`;
+        const status = getRequestStatus();
+        const methodUrl = item.method && item.url ? ` (${item.method} ${item.url})` : '';
+        return baseTitle + status + methodUrl;
+    };
+
     return (
-        <Card 
-            key={item.id} 
-            title={`Запрос ${index + 1}: ${item.description || 'Без описания'}`}
-            className={styles.requestCard}
-            extra={
-                <Button 
-                    type="text" 
-                    danger 
-                    icon={<DeleteOutlined />}
-                    onClick={() => onRemove()}
-                />
-            }
-        >
-            <Space direction="vertical" className={styles.requestSpace}>
-                {/* Описание запроса */}
-                <Input
-                    placeholder="Описание запроса"
-                    value={item.description}
-                    onChange={(e) => onUpdate({ description: e.target.value })}
-                />
-                
-                {/* Метод и URL */}
-                <Space className={styles.methodUrlRow}>
-                    <Select
-                        value={item.method}
-                        onChange={(value) => onUpdate({ method: value })}
-                        className={styles.methodSelect}
-                    >
-                        <Select.Option value="GET">GET</Select.Option>
-                        <Select.Option value="POST">POST</Select.Option>
-                        <Select.Option value="PUT">PUT</Select.Option>
-                        <Select.Option value="DELETE">DELETE</Select.Option>
-                        <Select.Option value="PATCH">PATCH</Select.Option>
-                    </Select>
-                    <Input
-                        placeholder="URL (например: /users)"
-                        value={item.url as string}
-                        onChange={(e) => onUpdate({ url: e.target.value })}
-                        className={styles.urlInput}
+        <div className={styles.requestContainer}>
+            <div className={styles.requestContent}>
+            <Collapse defaultActiveKey={[]} className={styles.requestCollapse}>
+                <Collapse.Panel key="1" header={getHeaderTitle()}>
+                    <div className={styles.requestSpace}>
+
+                    {/* Метод и URL */}
+                    <div className={styles.methodUrlRow}>
+                        <Select
+                            placeholder="Метод"
+                            value={item.method}
+                            onChange={(value) => onUpdate({ method: value })}
+                            className={styles.methodSelect}
+                            size="large"
+                        >
+                            <Select.Option value="GET">GET</Select.Option>
+                            <Select.Option value="POST">POST</Select.Option>
+                            <Select.Option value="PUT">PUT</Select.Option>
+                            <Select.Option value="DELETE">DELETE</Select.Option>
+                            <Select.Option value="PATCH">PATCH</Select.Option>
+                        </Select>
+                        <Input
+                            placeholder="URL (например: /api/users)"
+                            value={item.url as string}
+                            onChange={(e) => onUpdate({ url: e.target.value })}
+                            className={styles.urlInput}
+                            size="large"
+                        />
+                    </div>
+
+                    {/* Параметры URL */}
+                    <ParameterEditor
+                        params={item.urlParams || []}
+                        onChange={(params) => onUpdate({ urlParams: params })}
+                        title="Параметры URL"
+                        requestIndex={index}
+                        showHideKey={true}
                     />
-                </Space>
 
-                {/* Параметры URL */}
-                <ParameterEditor
-                    params={item.urlParams || []}
-                    onChange={(params) => onUpdate({ urlParams: params })}
-                    title="Параметры URL"
-                    requestIndex={index}
-                    showHideKey={true}
+                    {/* Query параметры */}
+                    <ParameterEditor
+                        params={item.queryParams || []}
+                        onChange={(params) => onUpdate({ queryParams: params })}
+                        title="Query параметры"
+                        requestIndex={index}
+                    />
+
+                    {/* Body для POST/PUT/PATCH */}
+                    {['POST', 'PUT', 'PATCH'].includes(item.method as string) && (
+                        <>
+                            <ParameterEditor
+                                params={item.bodyParams || []}
+                                onChange={(params) => onUpdate({ bodyParams: params })}
+                                title="Параметры Body"
+                                requestIndex={index}
+                            />
+                            <TextArea
+                                placeholder="Request Body (JSON) - необязательно, если используются параметры Body"
+                                value={item.body}
+                                onChange={(e) => onUpdate({ body: e.target.value })}
+                                className={styles.bodyTextArea}
+                                rows={4}
+                            />
+                        </>
+                    )}
+
+                    {/* Кнопки действий */}
+                    <div className={styles.actionButtons}>
+                        <Button 
+                            type="primary" 
+                            icon={<SendOutlined />}
+                            onClick={handleSendRequest}
+                            loading={isExecuting}
+                            className={styles.sendButton}
+                        >
+                            Отправить
+                        </Button>
+                        
+                        {currentResult && (
+                            <Button 
+                                onClick={() => setShowResult(!showResult)}
+                                className={styles.resultButton}
+                            >
+                                {showResult ? 'Скрыть результат' : 'Показать результат'}
+                            </Button>
+                        )}
+                        
+                        <Popconfirm
+                            title="Удалить запрос?"
+                            description="Вы уверены, что хотите удалить этот запрос?"
+                            onConfirm={onRemove}
+                            okText="Да"
+                            cancelText="Нет"
+                        >
+                            <Button 
+                                danger 
+                                icon={<DeleteOutlined />}
+                                className={styles.deleteButton}
+                            />
+                        </Popconfirm>
+                    </div>
+
+                    {/* Карточка результата */}
+                    {currentResult && (
+                        <div className={`${styles.resultCard} ${currentResult.success ? styles.success : styles.error}`}>
+                            <div className={`${styles.resultStatus} ${currentResult.success ? styles.success : styles.error}`}>
+                                Статус: {currentResult.status} {currentResult.success ? '✅' : '❌'}
+                            </div>
+                            <div className={styles.resultUrl}>
+                                {currentResult.url}
+                            </div>
+                        </div>
+                    )}
+                    </div>
+                </Collapse.Panel>
+            </Collapse>
+            </div>
+            {currentResult && showResult && (
+                <ResultCard 
+                    result={currentResult} 
+                    onClose={() => setShowResult(false)} 
                 />
-
-                {/* Query параметры */}
-                <ParameterEditor
-                    params={item.queryParams || []}
-                    onChange={(params) => onUpdate({ queryParams: params })}
-                    title="Query параметры"
-                    requestIndex={index}
-                />
-
-                {/* Body для POST/PUT/PATCH */}
-                {['POST', 'PUT', 'PATCH'].includes(item.method as string) && (
-                    <>
-                        <ParameterEditor
-                            params={item.bodyParams || []}
-                            onChange={(params) => onUpdate({ bodyParams: params })}
-                            title="Параметры Body"
-                            requestIndex={index}
-                        />
-                        <TextArea
-                            placeholder="Request Body (JSON) - необязательно, если используются параметры Body"
-                            value={item.body}
-                            onChange={(e) => onUpdate({ body: e.target.value })}
-                            rows={4}
-                            className={styles.bodyTextArea}
-                        />
-                    </>
-                )}
-            </Space>
-        </Card>
+            )}
+        </div>
     );
-};
+});

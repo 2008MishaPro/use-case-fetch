@@ -1,7 +1,65 @@
 .headerContainer {
-  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.title {
+  color: #262626;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
 }
 
 .addButton {
-  margin-bottom: 16px;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.2);
+}
+
+.addButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(24, 144, 255, 0.3);
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+  .headerContainer {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+  }
+  
+  .title {
+    font-size: 24px;
+    text-align: center;
+  }
+  
+  .addButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 20px;
+  }
+  
+  .headerContainer {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+  }
 }
