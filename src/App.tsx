@@ -3,7 +3,7 @@ import {Flex} from "antd";
 import {reatomComponent} from "@reatom/npm-react";
 import {FormUseCaseUI} from "./form-use-case/ui";
 
-const App = reatomComponent((ctx) => {
+const App = reatomComponent(() => {
     return (
         <Flex
         >

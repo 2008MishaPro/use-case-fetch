@@ -1,9 +1,7 @@
 import React from 'react';
-import { Typography, Button } from 'antd';
+import { Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import styles from './styles.module.css';
-
-const { Title } = Typography;
 
 interface FormHeaderProps {
     onAddRequest: () => void;

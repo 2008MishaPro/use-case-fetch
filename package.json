@@ -13,6 +13,7 @@
     "@reatom/framework": "^3.4.64",
     "@reatom/npm-react": "^3.10.6",
     "antd": "^5.26.5",
+    "axios": "^1.7.9",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tsx": "^4.20.3"

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, {type AxiosResponse, AxiosError } from 'axios';
 
 export const api = axios.create({
     headers: {
@@ -8,8 +8,8 @@ export const api = axios.create({
 
 // Интерцептор для обработки ответов
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
+    (response: AxiosResponse) => response,
+    (error: AxiosError) => {
         console.error('API Error:', error);
         return Promise.reject(error);
     }
