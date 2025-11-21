@@ -5,11 +5,11 @@ import App from './App.tsx'
 import { reatomContext } from '@reatom/npm-react'
 import { createCtx } from '@reatom/framework';
 
-const ctx = createCtx();
+export const reatomCtx = createCtx();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-      <reatomContext.Provider value={ctx}>
+      <reatomContext.Provider value={reatomCtx}>
           <App />
       </reatomContext.Provider>
   </StrictMode>,
